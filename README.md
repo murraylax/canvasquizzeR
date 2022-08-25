@@ -70,3 +70,23 @@ quizfilename <- "quiz.zip"
 
 generateQTI(quiz.df, outfolder, quiztitle, quizfilename)
 ```
+
+## Uploading to Canvas
+
+Navigate to your `outfolder` folder to find your .zip file. To upload this file to Canvas, use your web browser and navigate to your Canvas course. 
+
+ 1. On the *right-side* menu, select the `Import Existing Content` button.
+ 
+ 2. In the `Content Type` dropdown list, select `QTI .zip file`
+ 
+ 3. Click the `Choose File` button
+ 
+ 4. Select the .zip file from the `outfolder` folder
+ 
+ 5. Make sure the `Import existing quizzes as New Quizzes` check box is **not selected**
+ 
+ 6. Click `Import`
+ 
+ 7. Canvas will take a few seconds or minutes to import the quiz. When this process finishes, go to `Quizzes` on the *left-side* menu and find your quiz. You may edit the settings and questions as you see fit.
+ 
+ 
