@@ -1,0 +1,11 @@
+<section ident="#groupid" title="#GroupName">
+  <selection_ordering>
+    <selection>
+      <selection_number>1</selection_number>
+      <selection_extension>
+        <points_per_item>1.0</points_per_item>
+      </selection_extension>
+    </selection>
+  </selection_ordering>
+  #AllQuestionsText
+</section>
