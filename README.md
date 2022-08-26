@@ -1,11 +1,4 @@
----
-title: "canvasquizzeR"
-output:
-  html_document:
-    number_sections: true
-author: "James M. Murray, PhD"
-date: "August 26, 2022"
----
+# canvasquizzeR
 
 This is an R package with tools to convert quizzes from CSV to QTI quiz format (for Canvas upload), QTI to CSV, and QTI to pretty HTML. 
 
