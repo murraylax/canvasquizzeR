@@ -7,7 +7,7 @@
 generateQTI(df, outfolder, quiztitle, quizfilename)
 }
 \arguments{
-\item{df}{This is a data.frame where each row is a question. The column names should be the following:
+\item{df}{This is a tibble (i.e. data.frame) where each row is a question. The column names should be the following:
 \itemize{
 \item G: Question group
 \item Question: Text of the question
