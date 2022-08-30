@@ -89,9 +89,9 @@ create_questionxml_mc <- function(df, qn, respids) {
 
   # Text type
   if(magrittr::is_in("Text Type", quizcols) & !is_str_empty(df$`Text Type`[qn])) {
-    if(df$`Text Type`[qn]=="html") {
+    if(str_simplify(df$`Text Type`[qn])=="html") {
       question_str <- stringr::str_replace_all(question_str, "#TextType", "text/html")
-    } else if(df$`Text Type`[qn]=="plain") {
+    } else if(str_simplify(df$`Text Type`[qn])=="plain") {
       question_str <- stringr::str_replace_all(question_str, "#TextType", "text/plain")
     } else {
       error_str <- sprintf("ERROR: Invalid text type, %s", df$`Text Type`[qn])
