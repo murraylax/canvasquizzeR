@@ -1,0 +1,262 @@
+---
+output: 
+  pdf_document:
+    template: "`r paste0(path.package('canvasquizzeR'),'quiz-template.tex')`"
+    keep_md: true
+    keep_tex: true
+params:
+  quiz.df: NA
+  title: ""
+  subtitle: ""
+  instructor: ""
+  version: "a"
+  includeanswers: TRUE
+  seed: 1
+
+title: "`r params$title`"
+subtitle: "`r params$subtitle`"
+author:  "`r params$instructor`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning=FALSE, results="asis")
+
+set.seed(params$seed)
+df <- params$quiz.df
+```
+
+
+```{r}
+#' Test if the string str is NA, empty, or literally equal to "NA"
+is_str_empty_singlestr <- function(str) {
+  if(is.null(str)) return(TRUE)
+  if(is.na(str)) return(TRUE)
+  if(stringr::str_squish(as.character(str)) == "") return(TRUE)
+  if(stringr::str_trim(as.character(str))=="NA") return(TRUE)
+  return(FALSE)
+}
+
+#' Test if the string str is NA, empty, or literally equal to "NA"
+#' Vectorized version of is_str_empty_singlestr, can be applied to a single string or a vector
+is_str_empty <- function(str) {
+  if(is.null(str)) return(TRUE)
+  if(length(str)==1) return(is_str_empty_singlestr(str))
+  if(length(str)>1) {
+    return(sapply(X=str, FUN=is_str_empty_singlestr, simplify=TRUE))
+  }
+}
+```
+
+```{r}
+clean_question <- function(s) {
+  s <- stringr::str_replace_all(s, "&nbsp;", " ")
+  s <- stringr::str_replace_all(s, "\\s*&lt;", "&lt;") # Remove leading space before a tag
+  s <- stringr::str_replace_all(s, "&lt;", "<")
+  s <- stringr::str_replace_all(s, "&gt;", ">")
+  s <- stringr::str_replace_all(s, fixed("<strong>"), "\\textbf{")
+  s <- stringr::str_replace_all(s, fixed("</strong>"), "}")
+  s <- stringr::str_replace_all(s, fixed("<b>"), "\\textbf{")
+  s <- stringr::str_replace_all(s, fixed("</b>"), "}")
+  s <- stringr::str_replace_all(s, fixed("<i>"), "\\textit{")
+  s <- stringr::str_replace_all(s, fixed("</i>"), "}")
+  s <- stringr::str_replace_all(s, fixed("<em>"), "\\textit{")
+  s <- stringr::str_replace_all(s, fixed("</em>"), "}") 
+  s <- stringr::str_replace_all(s, fixed("<br/>"), " \\\\ ") 
+  s <- stringr::str_replace_all(s, fixed("<br>"), " \\\\ ") 
+  s <- stringr::str_replace_all(s, fixed("<p/>"), "\\ \\\\ ") 
+  s <- stringr::str_replace_all(s, fixed("</p>"), "\\ \\\\ ") 
+  s <- stringr::str_replace(s, "\\\\$", "") 
+  
+  
+  # Remove image tag and replace with latex 
+  m <- "\\<img.+src\\=(?:\"|\')(.+?)(?:\"|\')(?:.+?)\\>"
+  mm <- stringr::str_match_all(s, m)
+  mm <- mm[[1]]
+  if(length(mm)!=0) {
+    for(r in 1:nrow(mm)) {
+      latex <- sprintf("\n\n\\\\includegraphics[width=0.5\\\\linewidth]{%s}\n\n", mm[r,2])
+      s <- stringr::stringr::str_replace(s, mm[r,1], latex)    
+    }
+  }
+  s <- stringr::str_replace(s, "ILLUSTRATE YOUR ANSWER.*", "")
+  s <- stringr::str_replace(s, "TYPE A BRIEF.*", "")
+  
+  s <- stringr::str_replace_all(s, fixed("$"), "\\$")
+  s <- stringr::str_replace_all(s, fixed("^"), "\\^{}")
+  s <- stringr::str_replace_all(s, fixed("%"), "\\%")
+  s <- stringr::str_replace_all(s, fixed("_"), "\\_")
+  
+  # Get rid of all other HTML tags
+  s <- stringr::str_remove_all(s, "<.*?>")
+  
+  return(s)
+}
+
+str_simplify <- function(s) {
+  return(stringr::str_squish( stringr::str_to_lower(s)))
+}
+```
+
+```{r}
+
+print_question <- function(questionj, includeanswers, version="a")
+{
+  cat("\n\\begin{minipage}{\\linewidth}\n")
+
+  question_type <- questionj$`Question Type`
+  
+  if(str_simplify(question_type)=="essay") {
+    cat('\n\n')
+    question_str <- questionj$Question
+    question_str <- clean_question(question_str) # Remove leading space before a tag
+    question_str <- sprintf("\\item (%d points) %s\\newline \n\n", questionj$Points, question_str)
+    cat(question_str)
+    
+    feedback_str <- questionj$Feedback
+    feedback_str <- clean_question(feedback_str) # Remove leading space before a tag
+    feedback_str <- sprintf("\\textbf{Answer:} %s\\newline \n", feedback_str)
+    if(includeanswers) {
+      cat(feedback_str)
+    } else {
+      cat("\\vspace*{2.3in}\n")
+    }
+  }
+    
+  if(str_simplify(question_type)=="mc") {
+    question_str <- questionj$Question
+    question_str <- clean_question(question_str) # Remove leading space before a tag
+    question_str <- sprintf("\\item %s\n\n", question_str)
+    cat(question_str)
+    
+    responses <- questionj %>%
+      select(starts_with("Choice")) %>%
+      gather()
+    
+    nresponses <- dim(responses)[1]
+    
+    cat('\\begin{enumerate}\n')
+    
+    # This makes sure the different versions 'a' and 'b' have different selections for the correct answer
+    randomized_responses_a <- sample(1:nresponses, nresponses, replace=FALSE)
+    randomized_responses_b <- sample(1:nresponses, nresponses, replace=FALSE)
+    if(version=="a") {
+      randomized_responses <- randomized_responses_a
+    } else {
+      randomized_responses <- randomized_responses_b
+    }
+    
+    
+    for(r in randomized_responses) {
+      response_str <- responses$value[r]
+      response_str <- clean_question(response_str)
+      response_str <- sprintf("\\item %s\n\n", response_str)
+      cat(response_str)
+    }
+    cat("\\end{enumerate} \\vspace*{0.5pc}\n")  
+    
+    if(includeanswers) {
+      abcd <- c("A", "B", "C", "D")
+      correctanswer <- abcd[randomized_responses == as.numeric(questionj$A)]
+
+      feedback_str <- questionj$Feedback
+      feedback_str <- clean_question(feedback_str)
+
+      if(!is_str_empty(feedback_str)) {
+        correctstr <- sprintf("\n\\textbf{Correct Answer:} %s\n\n\\textbf{Feedback:} %s\\newline \n", correctanswer, feedback_str)
+      } else {
+        correctstr <- sprintf("\n\\textbf{Correct Answer:} %s\\newline \n", correctanswer)
+      }
+      cat(correctstr)
+    }
+  }
+    
+  cat("\\end{minipage}\\newline \n\n")
+}
+```
+
+```{r}
+#' Select a random question from a group and print the question
+#' @param group.df Data frame of question within the group
+#' @param selectnum Number of questions to randomly select from the group
+#' @param version character equal to 'a' or 'b' for version A or B of a quiz. If there are more than 2 x `selectnum` items in the group, the version 'a' and 'b' will have unique randomly-selected questions
+#' @param includeanswers boolean set to true to include the answer and feedback in the printout.
+print_random_questions_group <- function(group.df, selectnum=1, version="a", includeanswers=TRUE)
+{
+  nquestions <- nrow(group.df)
+  
+  if(nquestions >= 2*selectnum) {
+    selall <- sample(1:nquestions, 2*selectnum, replace=FALSE)
+    selq_a <- selall[1:selectnum]
+    selq_b <- selall[(selectnum+1):(2*selectnum)]
+  } else {
+    selq_a <- sample(1:nquestions, selectnum, replace=FALSE)
+    selq_b <- sample(1:nquestions, selectnum, replace=FALSE)
+  }
+
+  if(version=="a") {
+    selq <- selq_a
+  } else {
+    selq <- selq_b
+  }
+
+  for(nq in selq) { # First element is header stuff for the group
+    questionj <- group.df[nq,]
+    print_question(questionj, includeanswers, version=version)
+  }
+}
+```
+
+```{r}
+if(!is.na(quiz.df)) { # Don't do anything if the quiz is NA
+                  
+  # Multiple Choice Questions
+  
+  df.mc <- filter(df, str_simplify(`Question Type`)=="mc")
+  groups <- unique(df.mc$G)
+  ngroups <- length(groups)
+  
+  if(ngroups>0) {
+    cat("\\textbf{Multiple choice:} Choose the best response to each prompt.\\newline \n\n")
+    
+    cat("\\begin{enumerate}[leftmargin=1pc]")
+  
+    for(ng in 1:ngroups) {
+      group.df <- filter(df.mc, G==groups[ng])
+      print_random_questions_group(group.df, 1, params$version, includeanswers=params$includeanswers)
+    }
+    
+    cat("\\end{enumerate}\n\n")
+  }
+  
+  nextenum <- ngroups
+  
+  
+  # Short-answer Questions
+  
+  df.essay <- filter(df, str_simplify(`Question Type`)=="essay")
+  groups <- unique(df.essay$G)
+  ngroups <- length(groups)
+  
+  if(ngroups>0 & nextenum>0) {
+   # cat("\\vspace*{1pc}\n\n")
+    cat("\\newpage\n\n")
+  }
+  
+  if(ngroups>0) {
+    dir.str <- sprintf("\\textbf{Short-answer and problem-solving questions:} Provide written answers to each question in the space provided.\\newline\n\n")
+    cat(dir.str)
+    
+    cat("\\begin{enumerate}[leftmargin=1pc]\n")
+    setcounter_str <- sprintf("\\setcounter{enumi}{%d}\n", nextenum)
+    cat(setcounter_str)
+  
+    for(ng in 1:ngroups) {
+      group.df <- filter(df.essay, G==groups[ng])
+      print_random_questions_group(group.df, 1, params$version, includeanswers=params$includeanswers)
+    }
+    
+    cat("\\end{enumerate}")
+  }
+}
+
+```
