@@ -10,6 +10,9 @@ generateQTI(df, outfolder, quiztitle, quizfilename)
 \item{df}{This is a tibble (i.e. data.frame) where each row is a question. The column names should be the following:
 \itemize{
 \item G: Question group
+\item 'Question Type': Character string identifying the type of question, should equal either 'MC' for a multiple choice question or 'Essay' for an essay/short-answer question
+\item 'Text Type': Character string identifying whether the question text is plain text or html, should equal either 'html' or 'plain'
+\item Points: Number of points for the question
 \item Question: Text of the question
 \item A: Correct answer, a number 1 thru 4
 \item 'Choice 1': Choice 1

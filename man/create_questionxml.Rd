@@ -2,7 +2,7 @@
 % Please edit documentation in R/generateQTI.R
 \name{create_questionxml}
 \alias{create_questionxml}
-\title{Create the XML text for a single multiple-choice question}
+\title{Create the XML text for a single quiz question}
 \usage{
 create_questionxml(df, qn, respids)
 }
@@ -10,6 +10,9 @@ create_questionxml(df, qn, respids)
 \item{df}{data.frame where each row is a question. The column names should be the following:
 \itemize{
 \item G: Question group
+\item 'Question Type': Character string identifying the type of question, should equal either 'MC' for a multiple choice question or 'Essay' for an essay/short-answer question
+\item 'Text Type': Character string identifying whether the question text is plain text or html, should equal either 'html' or 'plain'
+\item Points: Number of points for the question
 \item Question: Text of the question
 \item A: Correct answer, a number 1 thru 4
 \item 'Choice 1': Choice 1
@@ -27,6 +30,6 @@ create_questionxml(df, qn, respids)
 Character string of the XML code for a single multiple-choice quiz question
 }
 \description{
-Create the XML text for a single multiple-choice question. Takes as an argument a data frame with all the multiple choice questions of the quiz, all the response IDs for every response on the quiz, and an integer identifying which row in the data frame that the question appears.
-It is necessary to include information for the whole quiz, because each question needs response IDs that are unique to the entire quiz.
+Create the XML text for a single quiz question. The quiz question may be a multiple-choice question (default if not specified) or essay question. Takes as an argument a data frame with all the multiple choice questions of the quiz, all the response IDs for every response on the quiz, and an integer identifying which row in the data frame that the question appears.
+It is necessary to include information for the whole quiz, because some questions may need response IDs that are unique to the entire quiz.
 }

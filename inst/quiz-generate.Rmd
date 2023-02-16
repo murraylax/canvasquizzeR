@@ -1,11 +1,6 @@
 ---
-output: 
-  pdf_document:
-    template: "`r paste0(path.package('canvasquizzeR'),'quiz-template.tex')`"
-    keep_md: true
-    keep_tex: true
 params:
-  quiz.df: NA
+  quiz.df: NULL
   title: ""
   subtitle: ""
   instructor: ""
@@ -75,7 +70,7 @@ clean_question <- function(s) {
   if(length(mm)!=0) {
     for(r in 1:nrow(mm)) {
       latex <- sprintf("\n\n\\\\includegraphics[width=0.5\\\\linewidth]{%s}\n\n", mm[r,2])
-      s <- stringr::stringr::str_replace(s, mm[r,1], latex)    
+      s <- stringr::str_replace(s, mm[r,1], latex)    
     }
   }
   s <- stringr::str_replace(s, "ILLUSTRATE YOUR ANSWER.*", "")
@@ -207,11 +202,11 @@ print_random_questions_group <- function(group.df, selectnum=1, version="a", inc
 ```
 
 ```{r}
-if(!is.na(quiz.df)) { # Don't do anything if the quiz is NA
+if(!is.null(quiz.df)) { # Don't do anything if the quiz is NULL
                   
   # Multiple Choice Questions
   
-  df.mc <- filter(df, str_simplify(`Question Type`)=="mc")
+  df.mc <- dplyr::filter(df, str_simplify(`Question Type`)=="mc")
   groups <- unique(df.mc$G)
   ngroups <- length(groups)
   
@@ -221,7 +216,7 @@ if(!is.na(quiz.df)) { # Don't do anything if the quiz is NA
     cat("\\begin{enumerate}[leftmargin=1pc]")
   
     for(ng in 1:ngroups) {
-      group.df <- filter(df.mc, G==groups[ng])
+      group.df <- dplyr::filter(df.mc, G==groups[ng])
       print_random_questions_group(group.df, 1, params$version, includeanswers=params$includeanswers)
     }
     
@@ -233,12 +228,11 @@ if(!is.na(quiz.df)) { # Don't do anything if the quiz is NA
   
   # Short-answer Questions
   
-  df.essay <- filter(df, str_simplify(`Question Type`)=="essay")
+  df.essay <- dplyr::filter(df, str_simplify(`Question Type`)=="essay")
   groups <- unique(df.essay$G)
   ngroups <- length(groups)
   
   if(ngroups>0 & nextenum>0) {
-   # cat("\\vspace*{1pc}\n\n")
     cat("\\newpage\n\n")
   }
   
@@ -251,7 +245,7 @@ if(!is.na(quiz.df)) { # Don't do anything if the quiz is NA
     cat(setcounter_str)
   
     for(ng in 1:ngroups) {
-      group.df <- filter(df.essay, G==groups[ng])
+      group.df <- dplyr::filter(df.essay, G==groups[ng])
       print_random_questions_group(group.df, 1, params$version, includeanswers=params$includeanswers)
     }
     
