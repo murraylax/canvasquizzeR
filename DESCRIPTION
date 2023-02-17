@@ -15,7 +15,11 @@ Imports:
   utils,
   XML,
   dplyr,
+  readxl,
   tibble,
   magrittr,
   knitr,
-  rmarkdown
+  rmarkdown,
+  googlesheets4,
+  googledrive,
+  docxtractr

@@ -1,4 +1,8 @@
 ---
+output:
+  pdf_document:
+    keep_md: true
+    keep_tex: true
 params:
   quiz.df: NULL
   title: ""
