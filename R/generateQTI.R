@@ -145,15 +145,15 @@ create_questionxml_essay <- function(df, qn) {
   # Text type
   if(magrittr::is_in("Text Type", quizcols) & !is_str_empty(df$`Text Type`[qn])) {
     if(df$`Text Type`[qn]=="html") {
-      question_str <- stringr::str_replace_all(questionstr, "#TextType", "text/html")
+      question_str <- stringr::str_replace_all(question_str, "#TextType", "text/html")
     } else if(df$`Text Type`[qn]=="plain") {
-      question_str <- stringr::str_replace_all(questionstr, "#TextType", "text/plain")
+      question_str <- stringr::str_replace_all(question_str, "#TextType", "text/plain")
     } else {
       error_str <- sprintf("ERROR: Invalid text type, %s", df$`Text Type`[qn])
       stop(error_str)
     }
   } else {
-    question_str <- stringr::str_replace_all(questionstr, "#TextType", "text/plain") # text/plain is the default if not specified
+    question_str <- stringr::str_replace_all(question_str, "#TextType", "text/plain") # text/plain is the default if not specified
   }
 
   return(question_str)
