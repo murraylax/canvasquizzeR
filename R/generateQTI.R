@@ -14,6 +14,7 @@ create_longid <- function(size=33) {
 }
 
 is_str_empty <- function(s) {
+  s <- as.character(s)
   if(is.na(s)) return(TRUE)
   if(is.null(s)) return(TRUE)
   if(!is.character(s)) return(TRUE)
