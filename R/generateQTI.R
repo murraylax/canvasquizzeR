@@ -245,6 +245,11 @@ create_groupxml <- function(df, groupi, respids) {
   # Identify rows in df associated with group
   group_questions_rows <- which(df$G==groupi)
 
+  # Set the number of points per question
+  df.group <- dplyr::slice(df,group_questions_rows)
+  points_per_question <- as.character(as.numeric(max(df.group$Points)))
+  group_str <- stringr::str_replace(group_str, "#pts", points_per_question)
+
   all_qestion_strs <- ""
   for(q in group_questions_rows) {
     question_str <- create_questionxml(df, q, respids)
