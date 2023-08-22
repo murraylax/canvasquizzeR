@@ -4,10 +4,30 @@
 \alias{read_quiz_googlesheet}
 \title{Read a quiz in from a Google Sheet and return a quiz data frame}
 \usage{
-read_quiz_googlesheet(sheet_url)
+read_quiz_googlesheet(
+  sheet_url,
+  noauth = FALSE,
+  sheet = NULL,
+  range = NULL,
+  na = "",
+  trim_ws = TRUE,
+  skip = 0
+)
 }
 \arguments{
 \item{sheet_url}{URL to a Google Sheet, hopefully mostly conforming to the above.}
+
+\item{noauth}{Logical, default is FALSE. Set equal to TRUE if the spreadsheet is accessible without Google login authorization and you would like to skip the login. Turns off authorization using \code{googlesheets4::gs4_deauth()}.}
+
+\item{sheet}{Same as the \code{sheet} parameter passed to \code{googlesheets4::read_sheet()}. Default is NULL. Sheet to read, in the sense of "worksheet" or "tab". You can identify a sheet by name, with a string, or by position, with a number. Ignored if the sheet is specified via range. If neither argument specifies the sheet, defaults to the first visible sheet.}
+
+\item{range}{Same as the \code{range} parameter passed to \code{googlesheets4::read_sheet()}. Default is NULL. A cell range to read from. If NULL, all non-empty cells are read. Otherwise specify range as described in Sheets A1 notation or using the helpers documented in cell-specification. Sheets uses fairly standard spreadsheet range notation, although a bit different from Excel. Examples of valid ranges: "Sheet1!A1:B2", "Sheet1!A:A", "Sheet1!1:2", "Sheet1!A5:A", "A1:B2", "Sheet1". Interpreted strictly, even if the range forces the inclusion of leading, trailing, or embedded empty rows or columns. Takes precedence over skip, n_max and sheet. Note range can be a named range, like "sales_data", without any cell reference.}
+
+\item{na}{Same as the \code{na} parameter passed to \code{googlesheets4::read_sheet()}. Default is "". Character vector of strings to interpret as missing values. By default, blank cells are treated as missing data.}
+
+\item{trim_ws}{Same as the \code{trim_ws} parameter passed to \code{googlesheets4::read_sheet()}. Logical, default is TRUE. Should leading and trailing whitespace be trimmed from cell contents?}
+
+\item{skip}{Same as the \code{skip} parameter passed to \code{googlesheets4::read_sheet()}. Default is 0. Minimum number of rows to skip before reading anything, be it column names or data. Leading empty rows are automatically skipped, so this is a lower bound. Ignored if range is given.}
 }
 \value{
 Quiz data frame with the columns above

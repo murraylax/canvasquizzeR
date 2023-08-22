@@ -4,10 +4,12 @@
 \alias{read_quiz_googledoc}
 \title{Read a quiz in from a Google Docs file and return a quiz data frame.}
 \usage{
-read_quiz_googledoc(doc_url, tbl_number = 1, overwrite = TRUE)
+read_quiz_googledoc(doc_url, noauth = FALSE, tbl_number = 1, overwrite = TRUE)
 }
 \arguments{
 \item{doc_url}{Path to the Google Docs file, with a table hopefully mostly conforming to the above.}
+
+\item{noauth}{Logical, default is FALSE. Set equal to TRUE if the spreadsheet is accessible without Google login authorization and you would like to skip the login. Turns off authorization using \code{googledrive::deauth()}.}
 
 \item{tbl_number}{If there is more than one table in the file, specify the table number you would like to import. Default is 1.}
 
