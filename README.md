@@ -17,11 +17,13 @@ devtools::install_github("murraylax/canvasquizzeR")
 
 Installation on Windows may require the `Rtools42` package. See [https://cran.rstudio.com/bin/windows/Rtools/rtools42/rtools.html](https://cran.rstudio.com/bin/windows/Rtools/rtools42/rtools.html)
 
-# Creating a QTI .zip Quiz File from a Spreadsheet
+# Quiz data frame
 
-## Quiz data frame
+A quiz is stores as a dataframe in R. Each rowof the dataframe is an individual multiple-choice or essay question. 
 
-The quiz, possibly given in a CSV file, needs to be loaded into a data frame. Each row is an individual multiple-choice or essay question. This package supports the following columns:
+One limitation of this package is that all questions must be strictly text or HTML.  If you want to use images, tables, or other rich content in your quiz questions, the text of the quiz questions, answers, and feedback can be expressed in HTML, but all images and other rich content elements cannot be stored with the quiz object. The HTML can reference externally accessible images.
+
+Quiz dataframes should have some or all of the following columns:
 
  - `G`: A description of the question group. You can have multiple questions with an identical question group. These questions will be grouped together and for each student, Canvas will pick a random question from this group. For example, you can have three questions about a single topic, and Canvas will randomly give your students one of the three given questions. Three rows in your data frame will have an identical value in the `G` column that identifies this group.
  
@@ -45,15 +47,37 @@ The quiz, possibly given in a CSV file, needs to be loaded into a data frame. Ea
 
  - `Feedback`: General feedback given to students after they complete the quiz and answers are shown
 
-The `readr::read_csv()` function is a nice tidy way to read in CSV files, which allows spaces in the column names (necessary for `Choice 1`, etc.).
 
-See [https://raw.githubusercontent.com/murraylax/canvasquizzeR/main/examplequiz.csv](https://raw.githubusercontent.com/murraylax/canvasquizzeR/main/examplequiz.csv) for an example quiz file.
+# Creating a QTI .zip Quiz File from a Spreadsheet
+
+## Example: Read a .CSV file to a quiz dataframe
+
+See [https://raw.githubusercontent.com/murraylax/canvasquizzeR/main/examplequiz.csv](https://raw.githubusercontent.com/murraylax/canvasquizzeR/main/examplequiz.csv) for an example quiz .CSV file.
+
+The `readr::read_csv()` function is a nice tidy way to read in CSV files, which allows spaces in the column names (necessary for `Choice 1`, etc.).
 
 ```
 quiz.df <- readr::read_csv("examplequiz.csv")
 ```
 
-## Generate a QTI Quiz File
+Alternative, there is a function included in this package called `read_quiz_csv()` that performs a similar function, and returns a quiz dataframe that adheres to the structure described above.
+
+```
+quiz.df <- read_quiz_csv("examplequiz.csv")
+```
+
+## Example: Read an Excel .XLSX file to a quiz dataframe
+
+The function, `read_quiz_excel()`, takes the filepath of an Excel .xlsx document, and returns a quiz datafrane that adheres to the structure described above.
+
+```
+quiz.df <- read_quiz_excel("examplequiz.xlsx")
+```
+
+
+
+
+# Generate a QTI Quiz File
 
 To generate a QTI file from the data frame, you need the following:
 
