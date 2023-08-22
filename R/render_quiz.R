@@ -142,11 +142,26 @@ quiz_format <- function(df) {
 #'
 #' @param sheet_url URL to a Google Sheet, hopefully mostly conforming to the above.
 #'
+#' @param noauth Logical, default is FALSE. Set equal to TRUE if the spreadsheet is accessible without Google login authorization and you would like to skip the login. Turns off authorization using `googlesheets4::gs4_deauth()`.
+#'
+#' @param sheet Same as the `sheet` parameter passed to `googlesheets4::read_sheet()`. Default is NULL. Sheet to read, in the sense of "worksheet" or "tab". You can identify a sheet by name, with a string, or by position, with a number. Ignored if the sheet is specified via range. If neither argument specifies the sheet, defaults to the first visible sheet.
+#'
+#' @param range Same as the `range` parameter passed to `googlesheets4::read_sheet()`. Default is NULL. A cell range to read from. If NULL, all non-empty cells are read. Otherwise specify range as described in Sheets A1 notation or using the helpers documented in cell-specification. Sheets uses fairly standard spreadsheet range notation, although a bit different from Excel. Examples of valid ranges: "Sheet1!A1:B2", "Sheet1!A:A", "Sheet1!1:2", "Sheet1!A5:A", "A1:B2", "Sheet1". Interpreted strictly, even if the range forces the inclusion of leading, trailing, or embedded empty rows or columns. Takes precedence over skip, n_max and sheet. Note range can be a named range, like "sales_data", without any cell reference.
+#'
+#' @param na Same as the `na` parameter passed to `googlesheets4::read_sheet()`. Default is "". Character vector of strings to interpret as missing values. By default, blank cells are treated as missing data.
+#'
+#' @param trim_ws Same as the `trim_ws` parameter passed to `googlesheets4::read_sheet()`. Logical, default is TRUE. Should leading and trailing whitespace be trimmed from cell contents?
+#'
+#' @param skip Same as the `skip` parameter passed to `googlesheets4::read_sheet()`. Default is 0. Minimum number of rows to skip before reading anything, be it column names or data. Leading empty rows are automatically skipped, so this is a lower bound. Ignored if range is given.
+#'
 #' @return Quiz data frame with the columns above
 #'
 #' @export
-read_quiz_googlesheet <- function(sheet_url) {
-  df <- googlesheets4::read_sheet(sheet_url)
+read_quiz_googlesheet <- function(sheet_url, noauth=FALSE, sheet = NULL, range = NULL, na = "", trim_ws = TRUE, skip = 0) {
+  if(noauth) {
+    googlesheets4::gs4_deauth()
+  }
+  df <- googlesheets4::read_sheet(sheet_url, sheet=sheet, range=range, na=na, trim_ws=trim_ws, skip=skip)
 
   df <- quiz_format(df)
   return(df)
@@ -210,6 +225,7 @@ read_quiz_excel <- function(filepath) {
   return(df)
 }
 
+
 #' Read a quiz in from a Word file and return a quiz data frame.
 #'
 #' @description This function reads a quiz in from a Word file. The quiz must be in a table in the document. The functions returns a quiz data frame that conforms to the following:
@@ -263,6 +279,8 @@ read_quiz_docx <- function(filepath, tbl_number=1) {
 #'
 #' @param doc_url Path to the Google Docs file, with a table hopefully mostly conforming to the above.
 #'
+#' @param noauth Logical, default is FALSE. Set equal to TRUE if the spreadsheet is accessible without Google login authorization and you would like to skip the login. Turns off authorization using `googledrive::deauth()`.
+#'
 #' @param tbl_number If there is more than one table in the file, specify the table number you would like to import. Default is 1.
 #'
 #' @param overwrite The function has the side effect of saving the Google Doc as a Word .docx file. If the .docx file already exists, set to TRUE or FALSE to overwrite the .docx file. The default is equal to TRUE.
@@ -270,7 +288,10 @@ read_quiz_docx <- function(filepath, tbl_number=1) {
 #' @return Quiz data frame with the columns above
 #'
 #' @export
-read_quiz_googledoc <- function(doc_url, tbl_number=1, overwrite=TRUE) {
+read_quiz_googledoc <- function(doc_url, noauth=FALSE, tbl_number=1, overwrite=TRUE) {
+  if(noauth) {
+    googledrive::drive_deauth()
+  }
   metafile <- googledrive::drive_download(doc_url, overwrite=overwrite)
   filepath <- metafile$local_path[1]
   df <- read_quiz_docx(filepath, tbl_number)
