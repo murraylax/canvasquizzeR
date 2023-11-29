@@ -73,15 +73,18 @@ clean_question <- function(s) {
   mm <- mm[[1]]
   if(length(mm)!=0) {
     for(r in 1:nrow(mm)) {
-      imgfile <- stringr::str_squish(mm[r,2])
-      if(stringr::str_detect(imgfile, "http://") ||  stringr::str_detect(imgfile, "https://")) {
-        syswget <- sprintf("wget %s", imgfile)
+      imgurl <- stringr::str_squish(mm[r,2])
+      if(stringr::str_detect(imgurl, "http://") ||  stringr::str_detect(imgurl, "https://")) {
+        imgfile <- stringr::str_match(imgurl, "[^/]+$")
+        imgpath <- sprintf("%s/%s", getwd(), imgfile)
+        syswget <- sprintf("wget %s -O %s", imgurl, imgpath)
         system(syswget)
-        imgfile <- stringr::str_match(imgfile, "[^/]+$")
+      } else{
+        imgpath <- imgurl
       }
       
-      latex <- sprintf("\n\n\\\\includegraphics[width=0.5\\\\linewidth]{%s}\n\n", imgfile)
-      s <- stringr::str_replace(s, mm[r,1], latex)    
+      latex <- sprintf("\n\n\\\\includegraphics[width=0.5\\\\linewidth]{%s}\n\n", imgpath)
+      s <- stringr::str_replace(s, m, latex)    
     }
   }
   s <- stringr::str_replace(s, "ILLUSTRATE YOUR ANSWER.*", "")
