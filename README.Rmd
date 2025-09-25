@@ -221,13 +221,13 @@ The result is a tibble (or data frame) where each row is an individual multiple-
  
 ## Writing the quiz to a spreadsheet
 
-You can use the `readr::write_csv()` to write the resulting quiz to a .csv file, or `WriteXLS::WriteXLS()` to write to an Excel .xlsx file:
+You can use the `readr::write_csv()` to write the resulting quiz to a .csv file, or `writexl::write_xlsx()` to write to an Excel .xlsx file:
 ```
 # CSV file
 readr::write_csv(quiz.df, file = "./quiz.csv")
 
 # Excel file
-WriteXLS::WriteXLS(quiz.df, ExcelFileName = "./quiz.xlsx")
+writexl::write_xlsx(quiz.df, path = "./quiz.xlsx")
 ```
 
 # Enjoy!
