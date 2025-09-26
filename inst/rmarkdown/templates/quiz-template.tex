@@ -1,4 +1,55 @@
-\documentclass[10pt]{article}
+% --- PDF/UA metadata (new + fallback) ---
+\ExplSyntaxOn
+\keys_if_exist:nnTF { document / metadata } { tags }
+  {
+    \DocumentMetadata{
+      pdfstandard = ua-1,
+      pdfversion  = 1.7,
+      tags,
+      lang        = en-US,
+      uncompress
+    }
+  }
+  {
+    \RequirePackage{pdfmanagement-testphase}
+    \DocumentMetadata{
+      testphase   = { tagging, uncompress },
+      pdfstandard = ua-1,
+      pdfversion  = 1.7,
+      lang        = en-US
+    }
+  }
+\ExplSyntaxOff
+\documentclass{article}
+
+% Load tagpdf and activate tagging
+\RequirePackage{tagpdf}
+\tagpdfsetup{
+  activate-all,
+  interwordspace = true,
+  tabsorder      = structure,
+  paratagging    = true
+}
+
+\usepackage{fontspec}
+\usepackage[english]{babel}
+% \usepackage{cmap}
+
+\usepackage{hyperref}
+\hypersetup{
+  pdfencoding=auto,
+  pdflang={en-US},
+  %%% ----------------- CHANGE TITLE HERE! ----------------- %%%
+  pdftitle={$title$},
+  %%% ------------------------------------------------------ %%%
+  pdfdisplaydoctitle=true,
+  colorlinks=true,
+  urlcolor=red
+}
+
+\usepackage{bookmark}
+\bookmarksetup{open,numbered}
+
 \usepackage[T1]{fontenc}
 \usepackage{calc}
 \usepackage{setspace}

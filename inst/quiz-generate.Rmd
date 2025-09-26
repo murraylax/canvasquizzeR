@@ -3,6 +3,7 @@ output:
   pdf_document:
     keep_md: true
     keep_tex: true
+    latex_engine: lualatex
 params:
   quiz.df: NULL
   title: ""
@@ -113,15 +114,15 @@ str_simplify <- function(s) {
 
 print_question <- function(questionj, includeanswers, version="a")
 {
-  cat("\n\\begin{minipage}{\\linewidth}\n")
+  cat("\n\\begin{samepage}\n")
 
   question_type <- questionj$`Question Type`
   
   if(str_simplify(question_type)=="essay") {
-    cat('\n\n')
+    # cat('\n\n')
     question_str <- questionj$Question
     question_str <- clean_question(question_str) # Remove leading space before a tag
-    question_str <- sprintf("\\item (%d points) %s\\newline \n\n", questionj$Points, question_str)
+    question_str <- sprintf("\\item (%d points) %s \n\n", questionj$Points, question_str)
     cat(question_str)
     
     feedback_str <- questionj$Feedback
@@ -182,7 +183,7 @@ print_question <- function(questionj, includeanswers, version="a")
     }
   }
     
-  cat("\\end{minipage}\\newline \n\n")
+  cat("\\end{samepage} \n\n")
 }
 ```
 

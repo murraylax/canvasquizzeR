@@ -33,13 +33,35 @@ render_pdf_quiz <- function(quiz.df, outfile, outfolder, quiz_title, quiz_subtit
   outfile_pdf <- sprintf("%s.pdf", outfile)
 
   template_file <- paste0(path.package("canvasquizzeR"), "/rmarkdown/templates/quiz-template.tex")
-  template_arg <- c("--template", template_file)
 
   markdown_file <- sprintf("%s/quiz-generate.Rmd", path.package("canvasquizzeR"))
-  rmarkdown::render(markdown_file,
-                    output_format = rmarkdown::output_format(knitr=rmarkdown::knitr_options(), pandoc = rmarkdown::pandoc_options(to="pdf", args=template_arg, keep_tex = TRUE)),
-                    output_file=outfile_pdf, output_dir=outfolder, intermediates_dir=outfolder, clean=FALSE,
-                    params=list(quiz.df=quiz.df, title=quiz_title, subtitle=quiz_subtitle, instructor=instructor, version=version, includeanswers=includeanswers, seed=seed))
+  # rmarkdown::render(markdown_file,
+  #                   output_format = rmarkdown::output_format(knitr=rmarkdown::knitr_options(), pandoc = rmarkdown::pandoc_options(to="pdf", args=template_arg, keep_tex = TRUE)),
+  #                   output_file=outfile_pdf, output_dir=outfolder, intermediates_dir=outfolder, clean=FALSE,
+  #                   params=list(quiz.df=quiz.df, title=quiz_title, subtitle=quiz_subtitle, instructor=instructor, version=version, includeanswers=includeanswers, seed=seed))
+
+  rmarkdown::render(
+    markdown_file,
+    output_format = rmarkdown::pdf_document(
+      latex_engine = "lualatex",
+      template     = template_file,  # you can still pass a custom template here
+      keep_tex     = TRUE
+    ),
+    output_file       = outfile_pdf,
+    output_dir        = outfolder,
+    intermediates_dir = outfolder,
+    clean             = FALSE,
+    params = list(
+      quiz.df       = quiz.df,
+      title         = quiz_title,
+      subtitle      = quiz_subtitle,
+      instructor    = instructor,
+      version       = version,
+      includeanswers= includeanswers,
+      seed          = seed
+    )
+  )
+
 
 }
 
