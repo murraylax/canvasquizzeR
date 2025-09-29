@@ -16,6 +16,7 @@ params:
 title: "`r params$title`"
 subtitle: "`r params$subtitle`"
 author:  "`r params$instructor`"
+# date: "`r params$`"
 ---
 
 ```{r setup, include=FALSE}
