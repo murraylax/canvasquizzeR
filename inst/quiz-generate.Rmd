@@ -115,7 +115,7 @@ str_simplify <- function(s) {
 
 print_question <- function(questionj, includeanswers, version="a")
 {
-  cat("\n\\begin{samepage}\n")
+  cat("\n\n\\begin{minipage}{\\textwidth}\n")
 
   question_type <- questionj$`Question Type`
   
@@ -184,7 +184,7 @@ print_question <- function(questionj, includeanswers, version="a")
     }
   }
     
-  cat("\\end{samepage} \n\n")
+  cat("\\end{minipage} \n\n")
 }
 ```
 
