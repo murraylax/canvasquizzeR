@@ -1,26 +1,39 @@
 ---
 output:
   pdf_document:
-    keep_md: true
+    keep_md: false
     keep_tex: true
     latex_engine: lualatex
 params:
   quiz.df: NULL
   title: ""
   subtitle: ""
+  short_title: ""
   instructor: ""
   version: "a"
   includeanswers: TRUE
   seed: 1
+  student_first_name: "Extra"
+  student_last_name: "Student"
+  student_username: "extra1"
+  exam_file_title_nospace: "exam"
 
 title: "`r params$title`"
 subtitle: "`r params$subtitle`"
+short_title: "`r params$short_title`"
 author:  "`r params$instructor`"
-# date: "`r params$`"
+student_first_name: "`r params$student_first_name`"
+student_last_name: "`r params$student_last_name`"
+student_first_name_url: "`r URLencode(params$student_first_name)`"
+student_last_name_url: "`r URLencode(params$student_last_name)`"
+student_username: "`r params$student_username`"
+exam_file_title_nospace: "`r params$exam_file_title_nospace`"
+
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, results="asis")
+# date: "`r params$date`"
 
 set.seed(params$seed)
 df <- params$quiz.df

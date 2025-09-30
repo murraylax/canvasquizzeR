@@ -30,7 +30,9 @@
 % student_first_name
 % student_last_name
 % student_email
-
+% student_first_name_url: detockenized for URL
+% student_last_name_url: detockenized for URL
+% exam_file_title_nospace
 
 % Load tagpdf and activate tagging
 \RequirePackage{tagpdf}
@@ -50,12 +52,12 @@
   pdfencoding=auto,
   pdflang={en-US},
   %%% ----------------- CHANGE TITLE HERE! ----------------- %%%
-  pdftitle={$title$ - $subtitle$},     
+  pdftitle={$title$ - $subtitle$},
   %%% ------------------------------------------------------ %%%
   pdfdisplaydoctitle=true,
   colorlinks=true,
   urlcolor=red
-} 
+}
 
 \usepackage{bookmark}
 \bookmarksetup{open,numbered}
@@ -111,9 +113,9 @@
 \usepackage{qrcode}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{$student_first_name$ $student_last_name$ ($student_email$)\\$short_title$, Page \thepage\ of \pageref*{LastPage}}
+\fancyhead[L]{$student_first_name$ $student_last_name$ ($student_username$@uwlax.edu)\\$short_title$, Page \thepage\ of \pageref*{LastPage}}
 \fancyfoot[C]{\raisebox{0.3in}\thepage}
-\fancyfoot[R]{\rlap{\raisebox{0.6in}{\hspace{-0.6in}\qrcode*[height=1in]{https://murraylax.org/goodluck.html?firstname=$student_first_name$&lastname=$student_last_name$&email=$student_email$&exam=$exam_file_title_nospace$&page=\ifnum\thepage<10 0\fi\thepage}}}}
+\fancyfoot[R]{\rlap{\raisebox{0.6in}{\hspace{-0.6in}\qrcode*[height=1in]{https://murraylax.org/goodluck.html?firstname=$student_first_name_url$&lastname=$student_last_name_url$&username=$student_username$&exam=$exam_file_title_nospace$&page=\ifnum\thepage<10 0\fi\thepage}}}}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
@@ -141,7 +143,7 @@ DO NOT FLIP THE PAGE UNTIL\\ THE ANNOUNCEMENT TO BEGIN
 \begin{center}
 \begin{minipage}{0.7\linewidth}
     \begin{itemize}
-        \item Calculators are allowed and useful for this exam
+        \item Calculators are allowed for this exam
         \item No phones, headphones, or earbuds
         \item Flip bubble sheet upside down when you have finished the multiple-choice questions
         \item Raise your hand if you have any questions
@@ -158,133 +160,7 @@ DO NOT FLIP THE PAGE UNTIL\\ THE ANNOUNCEMENT TO BEGIN
 \end{center}
 \newpage
 
-\section{Multiple Choice}
-\strong{Directions:} Choose the best response to each prompt. Each multiple-choice problem is worth 2 points.\\
-
-\begin{enumerate}[leftmargin=1pc]
-\begin{minipage}{\linewidth}
-\item The production possibilities frontier model shows that
-
-\begin{enumerate}
-\item if consumers decide to buy more of a product its price will increase.
-
-\item economic growth can only be achieved by free market economies.
-
-\item a market economy is more efficient in producing goods and services than is a centrally planned economy.
-
-\item if all resources are fully and efficiently utilized, more of one good can be produced only by producing less of another good.
-
-\end{enumerate} \vspace*{0.5pc}
-\end{minipage}\newline 
-
-\begin{minipage}{\linewidth}
-\item The production possibilities frontier model shows that
-
-\begin{enumerate}
-\item if consumers decide to buy more of a product its price will increase.
-
-\item economic growth can only be achieved by free market economies.
-
-\item a market economy is more efficient in producing goods and services than is a centrally planned economy.
-
-\item if all resources are fully and efficiently utilized, more of one good can be produced only by producing less of another good.
-
-\end{enumerate} \vspace*{0.5pc}
-\end{minipage}\newline 
-
-
-\begin{minipage}{\linewidth}
-\item A production possibilities frontier with a bowed outward shape indicates
-
-\begin{enumerate}
-\item constant opportunity costs as more and more of one good is produced.
-
-\item the possibility of inefficient production.
-
-\item decreasing opportunity costs as more and more of one good is produced.
-
-\item increasing opportunity costs as more and more of one good is produced.
-
-\end{enumerate} \vspace*{0.5pc}
-\end{minipage}\newline 
-
-
-\begin{minipage}{\linewidth}
-\item An inward shift of a nation's production possibilities frontier can occur due to
-
-\begin{enumerate}
-\item a change in the amounts of one good desired.
-
-\item an increase in the labor force.
-
-\item a natural disaster like a hurricane or bad earthquake.
-
-\item a reduction in unemployment.
-
-\end{enumerate} \vspace*{0.5pc}
-\end{minipage}\newline 
-
-\end{enumerate}
-\newpage
-
-\section{Short-Answer and Problem-Solving Questions} 
-
-\strong{Directions:} Provide written answers to each question in the space provided.\newline
-
-\begin{enumerate}[leftmargin=1pc]
-\setcounter{enumi}{25}
-
-\begin{minipage}{\linewidth}
-
-
-\item (5 points) Suppose an economy produces automobiles and planes according the following production possibilities table:\newline 
-\begin{tabular}{|p{0.8in}|c|c|}\hline 
-Production Choice & Automobiles & Planes \\ \hline 
-A & 600 & 0 \\B & 540 & 10 \\C & 420 & 20 \\D & 240 & 30 \\E & 0 & 40 \\ \hline 
-\end{tabular}\newline 
-Compute the opportunity cost of producing a plane at each level in the table. Does plane production exhibit increasing, decreasing, or constant opportunity cost?\newline 
-
-\vspace*{2.3in}
-\end{minipage}\newline 
-
-
-\begin{minipage}{\linewidth}
-
-
-\item (5 points)  Suppose an improvement in manufacturing technology makes it easier to produce automobiles. Describe and illustrate the impact on the market for automobiles.\newline 
-
-\vspace*{2.3in}
-\end{minipage}\newline 
-
-
-\begin{minipage}{\linewidth}
-
-
-\item (5 points) The difficult recession in 2007-2009 and beyond led to Christmas tree farmers to hold off on planting Christmas trees (it takes approximately 10-12 years to grow a typical-sized Christmas tree - and true story). In 2020, more people decided they preferred real Christmas trees over fake trees. Describe and illustrate the impact on the equilibrium price and quantity for real Christmas trees in 2020.\newline 
-
-\vspace*{2.3in}
-\end{minipage}\newline 
-
-
-\begin{minipage}{\linewidth}
-
-
-\item (5 points) Suppose governments provide a new tax incentive that gives money to people to use ethanol-based fuel for their cars. At the same time, suppose a poor growing season results in less corn production which is used in ethanol production. Describe and illustrate the impact on the equilibrium price and quantity of ethanol-based fuel.\newline 
-
-\vspace*{2.3in}
-\end{minipage}\newline 
-
-
-\begin{minipage}{\linewidth}
-
-
-\item (5 points)  Suppose interest rates increase in Russia and the Euro area, but the increase is larger in the Euro area. Describe and illustrate the impact on the Russian Ruble (RUB) to Euro (EUR) exchange rate.\newline 
-
-\vspace*{2.3in}
-\end{minipage}\newline 
-
-
-\end{enumerate}
+$body$
 
 % Automatically add blank page if odd number of pages
 \AtEndDocument{%
