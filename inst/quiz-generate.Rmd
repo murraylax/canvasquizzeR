@@ -145,7 +145,7 @@ print_question <- function(questionj, includeanswers, version="a")
     if(includeanswers) {
       cat(feedback_str)
     } else {
-      cat("\\vspace*{3in}\n")
+      cat("\\vspace*{2.3in}\n")
     }
   }
     
