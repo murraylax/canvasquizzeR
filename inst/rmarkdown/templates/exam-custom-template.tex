@@ -1,25 +1,11 @@
-% --- PDF/UA metadata (new + fallback) ---
-\ExplSyntaxOn
-\keys_if_exist:nnTF { document / metadata } { tags }
-  {
-    \DocumentMetadata{
-      pdfstandard = ua-1,
-      pdfversion  = 1.7,
-      tags,
-      lang        = en-US,
-      uncompress
-    }
-  }
-  {
-    \RequirePackage{pdfmanagement-testphase}
-    \DocumentMetadata{
-      testphase   = { tagging, uncompress },
-      pdfstandard = ua-1,
-      pdfversion  = 1.7,
-      lang        = en-US
-    }
-  }
-\ExplSyntaxOff
+% --- PDF/UA metadata ---
+\DocumentMetadata{
+  pdfstandard = ua-1,
+  pdfversion  = 1.7,
+  testphase   = { latest },
+  lang        = en-US,
+  uncompress
+}
 \documentclass{article}
 
 
@@ -107,6 +93,7 @@
 \setlength{\textheight}{8.5in}
 \setlength{\parskip}{0pc}
 \setlength{\parindent}{0pc}
+\setlength{\leftmargini}{1.4em}
 
 \renewcommand{\baselinestretch}{1.1}
 

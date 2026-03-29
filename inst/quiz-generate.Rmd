@@ -128,15 +128,14 @@ str_simplify <- function(s) {
 
 print_question <- function(questionj, includeanswers, version="a")
 {
-  cat("\n\n\\begin{minipage}{\\textwidth}\n")
-
+  cat("\n\n\\item\n\\begin{minipage}[t]{\\linewidth}\n")
   question_type <- questionj$`Question Type`
   
   if(str_simplify(question_type)=="essay") {
     # cat('\n\n')
     question_str <- questionj$Question
     question_str <- clean_question(question_str) # Remove leading space before a tag
-    question_str <- sprintf("\\item (%d points) %s \n\n", questionj$Points, question_str)
+    question_str <- sprintf("(%d points) %s \n\n", questionj$Points, question_str)
     cat(question_str)
     
     feedback_str <- questionj$Feedback
@@ -152,7 +151,7 @@ print_question <- function(questionj, includeanswers, version="a")
   if(str_simplify(question_type)=="mc") {
     question_str <- questionj$Question
     question_str <- clean_question(question_str) # Remove leading space before a tag
-    question_str <- sprintf("\\item %s\n\n", question_str)
+    question_str <- sprintf("%s\n\n", question_str)
     cat(question_str)
     
     responses <- questionj %>%
@@ -245,7 +244,7 @@ if(!is.null(quiz.df)) { # Don't do anything if the quiz is NULL
   if(ngroups>0) {
     cat("\\textbf{Multiple choice:} Choose the best response to each prompt.\\newline \n\n")
     
-    cat("\\begin{enumerate}[leftmargin=1pc]")
+    cat("\\begin{enumerate}")
   
     for(ng in 1:ngroups) {
       group.df <- dplyr::filter(df.mc, G==groups[ng])
@@ -272,7 +271,7 @@ if(!is.null(quiz.df)) { # Don't do anything if the quiz is NULL
     dir.str <- sprintf("\\textbf{Short-answer and problem-solving questions:} Provide written answers to each question in the space provided.\\newline\n\n")
     cat(dir.str)
     
-    cat("\\begin{enumerate}[leftmargin=1pc]\n")
+    cat("\\begin{enumerate}\n")
     setcounter_str <- sprintf("\\setcounter{enumi}{%d}\n", nextenum)
     cat(setcounter_str)
   
