@@ -28,19 +28,203 @@
 #' @param version Character, set to "a" or "b" for a version number. If there are more than two questions in any group of questions, for the name random number seed, the two versions will have two different questions. Default value is "a".
 #'
 #' @export
-render_pdf_quiz <- function(quiz.df, outfile, outfolder, quiz_title, quiz_subtitle="", instructor="", includeanswers=TRUE, version="a", seed=1) {
+render_pdf_quiz <- function(
+  quiz.df,
+  outfile,
+  outfolder,
+  quiz_title,
+  quiz_subtitle = "",
+  instructor = "",
+  includeanswers = TRUE,
+  version = "a",
+  seed = 1
+) {
+  cavnasquizzr_render_pdf(
+    quiz.df,
+    outfile,
+    outfolder,
+    quiz_title,
+    short_title = "",
+    latex_template = "standard",
+    quiz_subtitle = quiz_subtitle,
+    instructor = instructor,
+    includeanswers = includeanswers,
+    version = version,
+    seed = seed
+  )
+}
 
+#' Render a TeX and PDF file of a quiz
+#'
+#' @description
+#' This function takes a dataframe with a quiz and creates Markdown file for the quiz, and renders to TeX and PDF files
+#'
+#' @param quiz.df data.frame where each row is a question. The column names should be the following:
+#'   - G: Question group
+#'   - Question: Text of the question
+#'   - A: Correct answer, a number 1 thru 4
+#'   - 'Choice 1': Choice 1
+#'   - 'Choice 2': Choice 2
+#'   - 'Choice 3': Choice 3
+#'   - 'Choice 4': Choice 4
+#'   - Feedback: General feedback given to students after they complete the quiz and answers are shown
+#'
+#' @param outfile String with the name of the output file, but do not include the extension. File names with extensions .md, .tex, and .pdf will be created
+#'
+#' @param outfolder String with the name of the folder to save the output
+#'
+#' @param quiz_title String with the title of the quiz
+#'
+#' @param quiz_subtitle String with a subtitle for the quiz, default is ""
+#'
+#' @param instructor String with the instructor name, default is ""
+#'
+#' @param includeanswers Boolean, set equal to TRUE to include answers in the output, FALSE to not include answers in the output. Default value is TRUE.
+#'
+#' @param version Character, set to "a" or "b" for a version number. If there are more than two questions in any group of questions, for the name random number seed, the two versions will have two different questions. Default value is "a".
+#'
+#' @export
+render_pdf_individual_exam <- function(
+  quiz.df,
+  outfile,
+  outfolder,
+  quiz_title,
+  short_title,
+  student_first_name,
+  student_last_name,
+  student_username,
+  exam_file_title_nospace,
+  quiz_subtitle = "",
+  instructor = "",
+  includeanswers = TRUE,
+  version = "a",
+  seed = 1
+) {
+  cavnasquizzr_render_pdf(
+    quiz.df,
+    outfile,
+    outfolder,
+    quiz_title,
+    short_title,
+    student_first_name,
+    student_last_name,
+    student_username,
+    exam_file_title_nospace,
+    latex_template = "individual",
+    quiz_subtitle = quiz_subtitle,
+    instructor = instructor,
+    includeanswers = includeanswers,
+    version = version,
+    seed = seed
+  )
+}
+
+#' Render a TeX and PDF file of a quiz
+#'
+#' @description
+#' This function takes a dataframe with a quiz and creates Markdown file for the quiz, and renders to TeX and PDF files
+#'
+#' @param quiz.df data.frame where each row is a question. The column names should be the following:
+#'   - G: Question group
+#'   - Question: Text of the question
+#'   - A: Correct answer, a number 1 thru 4
+#'   - 'Choice 1': Choice 1
+#'   - 'Choice 2': Choice 2
+#'   - 'Choice 3': Choice 3
+#'   - 'Choice 4': Choice 4
+#'   - Feedback: General feedback given to students after they complete the quiz and answers are shown
+#'
+#' @param outfile String with the name of the output file, but do not include the extension. File names with extensions .md, .tex, and .pdf will be created
+#'
+#' @param outfolder String with the name of the folder to save the output
+#'
+#' @param quiz_title String with the title of the quiz
+#'
+#' @param latex_template Either "standard" or "individual"
+#'
+#' @param quiz_subtitle String with a subtitle for the quiz, default is ""
+#'
+#' @param instructor String with the instructor name, default is ""
+#'
+#' @param includeanswers Boolean, set equal to TRUE to include answers in the output, FALSE to not include answers in the output. Default value is TRUE.
+#'
+#' @param version Character, set to "a" or "b" for a version number. If there are more than two questions in any group of questions, for the name random number seed, the two versions will have two different questions. Default value is "a".
+#'
+#' @export
+cavnasquizzr_render_pdf <- function(
+  quiz.df,
+  outfile,
+  outfolder,
+  quiz_title,
+  short_title,
+  student_first_name = "",
+  student_last_name = "",
+  student_username = "",
+  exam_file_title_nospace = "exam",
+  latex_template = "standard",
+  quiz_subtitle = "",
+  instructor = "",
+  includeanswers = TRUE,
+  version = "a",
+  seed = 1
+) {
   outfile_pdf <- sprintf("%s.pdf", outfile)
 
-  template_file <- paste0(path.package("canvasquizzeR"), "/rmarkdown/templates/quiz-template.tex")
-  template_arg <- c("--template", template_file)
+  if (latex_template == "individual") {
+    template_file <- paste0(
+      path.package("canvasquizzeR"),
+      "/rmarkdown/templates/exam-custom-template.tex"
+    )
 
-  markdown_file <- sprintf("%s/quiz-generate.Rmd", path.package("canvasquizzeR"))
-  rmarkdown::render(markdown_file,
-                    output_format = rmarkdown::output_format(knitr=rmarkdown::knitr_options(), pandoc = rmarkdown::pandoc_options(to="pdf", args=template_arg, keep_tex = TRUE)),
-                    output_file=outfile_pdf, output_dir=outfolder, intermediates_dir=outfolder, clean=FALSE,
-                    params=list(quiz.df=quiz.df, title=quiz_title, subtitle=quiz_subtitle, instructor=instructor, version=version, includeanswers=includeanswers, seed=seed))
+    rmdparams <- list(
+      quiz.df = quiz.df,
+      title = quiz_title,
+      subtitle = quiz_subtitle,
+      short_title = short_title,
+      instructor = instructor,
+      version = version,
+      includeanswers = includeanswers,
+      seed = seed,
+      student_first_name = student_first_name,
+      student_last_name = student_last_name,
+      student_username = student_username,
+      exam_file_title_nospace = exam_file_title_nospace
+    )
+  } else {
+    template_file <- paste0(
+      path.package("canvasquizzeR"),
+      "/rmarkdown/templates/quiz-template.tex"
+    )
 
+    rmdparams <- list(
+      quiz.df = quiz.df,
+      title = quiz_title,
+      subtitle = quiz_subtitle,
+      instructor = instructor,
+      version = version,
+      includeanswers = includeanswers,
+      seed = seed
+    )
+  }
+
+  markdown_file <- sprintf(
+    "%s/quiz-generate.Rmd",
+    path.package("canvasquizzeR")
+  )
+
+  rmarkdown::render(
+    markdown_file,
+    output_format = rmarkdown::pdf_document(
+      latex_engine = "lualatex",
+      template = template_file, # you can still pass a custom template here
+      keep_tex = TRUE
+    ),
+    output_file = outfile_pdf,
+    output_dir = outfolder,
+    intermediates_dir = outfolder,
+    clean = FALSE,
+    params = rmdparams
+  )
 }
 
 #' Check formatting and set default values for quiz data frame, df
@@ -69,26 +253,26 @@ quiz_format <- function(df) {
   names(df) <- stringr::str_to_title(names(df))
 
   # Default values
-  if(!any(names(df)=="Choice 1")) {
+  if (!any(names(df) == "Choice 1")) {
     df$`Choice 1` <- ""
   }
-  if(!any(names(df)=="Choice 2")) {
+  if (!any(names(df) == "Choice 2")) {
     df$`Choice 2` <- ""
   }
-  if(!any(names(df)=="Choice 3")) {
+  if (!any(names(df) == "Choice 3")) {
     df$`Choice 3` <- ""
   }
-  if(!any(names(df)=="Choice 4")) {
+  if (!any(names(df) == "Choice 4")) {
     df$`Choice 4` <- ""
   }
-  if(!any(names(df)=="Feedback")) {
+  if (!any(names(df) == "Feedback")) {
     df$`Feedback` <- ""
   }
-  if(!any(names(df)=="A")) {
+  if (!any(names(df) == "A")) {
     df$A <- as.numeric(NA)
   }
 
-  if(!any(names(df)=="Question Type")) {
+  if (!any(names(df) == "Question Type")) {
     df$`Question Type` <- ""
   }
 
@@ -104,17 +288,19 @@ quiz_format <- function(df) {
   df$`Choice 4` <- as.character(df$`Choice 4`)
   df$Feedback <- as.character(df$Feedback)
 
-  if(!any(names(df)=="G")) {
+  # Default values
+  if (!any(names(df) == "G")) {
     df$G <- paste("Question", as.character(1:nrow(df)))
   }
   df$G <- as.character(df$G)
-  if(!any(names(df)=="Points")) {
+
+  if (!any(names(df) == "Points")) {
     df$Points <- 1
   }
   df$Points <- as.numeric(df$Points)
   df$Points[is.na(df$Points)] <- 1
 
-  if(!any(names(df)=="Text Type")) {
+  if (!any(names(df) == "Text Type")) {
     df$`Text Type` <- "html"
   }
   df$`Text Type`[is.na(df$`Text Type`)] <- "html"
@@ -157,11 +343,26 @@ quiz_format <- function(df) {
 #' @return Quiz data frame with the columns above
 #'
 #' @export
-read_quiz_googlesheet <- function(sheet_url, noauth=FALSE, sheet = NULL, range = NULL, na = "", trim_ws = TRUE, skip = 0) {
-  if(noauth) {
+read_quiz_googlesheet <- function(
+  sheet_url,
+  noauth = FALSE,
+  sheet = NULL,
+  range = NULL,
+  na = "",
+  trim_ws = TRUE,
+  skip = 0
+) {
+  if (noauth) {
     googlesheets4::gs4_deauth()
   }
-  df <- googlesheets4::read_sheet(sheet_url, sheet=sheet, range=range, na=na, trim_ws=trim_ws, skip=skip)
+  df <- googlesheets4::read_sheet(
+    sheet_url,
+    sheet = sheet,
+    range = range,
+    na = na,
+    trim_ws = trim_ws,
+    skip = skip
+  )
 
   df <- quiz_format(df)
   return(df)
@@ -250,9 +451,9 @@ read_quiz_excel <- function(filepath) {
 #' @return Quiz data frame with the columns above
 #'
 #' @export
-read_quiz_docx <- function(filepath, tbl_number=1) {
+read_quiz_docx <- function(filepath, tbl_number = 1) {
   doc <- docxtractr::read_docx(filepath)
-  df <- docxtractr::docx_extract_tbl(doc,tbl_number)
+  df <- docxtractr::docx_extract_tbl(doc, tbl_number)
   names(df) <- stringr::str_replace_all(names(df), "\\.", " ")
   df <- quiz_format(df)
   return(df)
@@ -288,14 +489,17 @@ read_quiz_docx <- function(filepath, tbl_number=1) {
 #' @return Quiz data frame with the columns above
 #'
 #' @export
-read_quiz_googledoc <- function(doc_url, noauth=FALSE, tbl_number=1, overwrite=TRUE) {
-  if(noauth) {
+read_quiz_googledoc <- function(
+  doc_url,
+  noauth = FALSE,
+  tbl_number = 1,
+  overwrite = TRUE
+) {
+  if (noauth) {
     googledrive::drive_deauth()
   }
-  metafile <- googledrive::drive_download(doc_url, overwrite=overwrite)
+  metafile <- googledrive::drive_download(doc_url, overwrite = overwrite)
   filepath <- metafile$local_path[1]
   df <- read_quiz_docx(filepath, tbl_number)
   return(df)
 }
-
-

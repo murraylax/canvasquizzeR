@@ -1,0 +1,165 @@
+% --- PDF/UA metadata ---
+\DocumentMetadata{
+  pdfstandard = ua-1,
+  pdfversion  = 1.7,
+  testphase   = { latest },
+  lang        = en-US,
+  uncompress
+}
+\documentclass{article}
+
+
+% Note: This document takes several parameters:
+% title: eg, "ECO 120 Global Macroeconomics"
+% subtitle: eg, "Exam 1 - Fall 2025"
+% author: Name of the instructor of the course
+% student_first_name
+% student_last_name
+% student_email
+% student_first_name_url: detockenized for URL
+% student_last_name_url: detockenized for URL
+% exam_file_title_nospace
+
+% Load tagpdf and activate tagging
+\RequirePackage{tagpdf}
+\tagpdfsetup{
+  activate-all,
+  interwordspace = true,
+  tabsorder      = structure,
+  paratagging    = true
+}
+
+\usepackage{fontspec}
+\usepackage[english]{babel}
+\usepackage{cmap}
+
+\usepackage{hyperref}
+\hypersetup{
+  pdfencoding=auto,
+  pdflang={en-US},
+  %%% ----------------- CHANGE TITLE HERE! ----------------- %%%
+  pdftitle={$title$ - $subtitle$},
+  %%% ------------------------------------------------------ %%%
+  pdfdisplaydoctitle=true,
+  colorlinks=true,
+  urlcolor=red
+}
+
+\usepackage{bookmark}
+\bookmarksetup{open,numbered}
+
+\usepackage[T1]{fontenc}
+\usepackage{calc}
+\usepackage{setspace}
+\usepackage{multicol}
+\usepackage{longtable,booktabs,array}
+
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{rotating}
+\usepackage{enumitem}
+\usepackage{enumitem}
+\setlist{itemsep=0.2em} % Adjust values as needed
+\usepackage{verbatim}
+\usepackage{titling}
+
+% Simple subtitle definition for article class
+\makeatletter
+\providecommand{\subtitle}[1]{\gdef\@subtitle{#1}}
+\renewcommand{\maketitle}{
+  \begin{center}
+    {\LARGE\@title\par}
+    \vskip 0.5em
+    {\Large\@subtitle\par}
+    \vskip 1em
+    {\large\@author\par}
+    \vskip 1em
+    {\large\@date\par}
+  \end{center}
+}
+\makeatother
+
+\setlength{\voffset}{-0.5in}
+\setlength{\topmargin}{0pt}
+\setlength{\hoffset}{-0.25in}
+\setlength{\oddsidemargin}{0pt}
+\setlength{\headheight}{24pt}
+\setlength{\headsep}{0.3in}
+\setlength{\marginparsep}{0pt}
+\setlength{\marginparwidth}{0pt}
+\setlength{\marginparpush}{0pt}
+\setlength{\footskip}{1.2in}
+\setlength{\textwidth}{7in}
+\setlength{\textheight}{8.5in}
+\setlength{\parskip}{0pc}
+\setlength{\parindent}{0pc}
+\setlength{\leftmargini}{1.4em}
+
+\renewcommand{\baselinestretch}{1.1}
+
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{qrcode}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{$student_first_name$ $student_last_name$ ($student_username$@uwlax.edu)\\$short_title$, Page \thepage\ of \pageref*{LastPage}}
+\fancyfoot[C]{\raisebox{0.3in}\thepage}
+\fancyfoot[R]{\rlap{\raisebox{0.6in}{\hspace{-0.6in}\qrcode*[height=1in]{https://murraylax.org/goodluck.html?firstname=$student_first_name_url$&lastname=$student_last_name_url$&username=$student_username$&exam=$exam_file_title_nospace$&page=\ifnum\thepage<10 0\fi\thepage}}}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Remove section numbering
+\setcounter{secnumdepth}{0}
+
+\begin{document}
+\vspace*{0.5in}
+\title{$title$}
+\subtitle{$subtitle$}
+\author{Instructor: $author$}
+\date{}
+
+\maketitle
+
+\vspace*{1.5in}
+\begin{LARGE}
+\begin{center}
+DO NOT FLIP THE PAGE UNTIL\\ THE ANNOUNCEMENT TO BEGIN
+\end{center}
+\end{LARGE}
+
+\vspace*{1.5in}
+
+\begin{center}
+\begin{minipage}{0.7\linewidth}
+    \begin{itemize}
+        \item Calculators are allowed for this exam
+        \item No phones, headphones, or earbuds
+        \item Flip bubble sheet upside down when you have finished the multiple-choice questions
+        \item Raise your hand if you have any questions
+        \item Good luck!
+    \end{itemize}
+\end{minipage}
+\end{center}
+
+\newpage
+
+\vspace*{1in}
+\begin{center}
+    \LARGE This page intentionally left blank
+\end{center}
+\newpage
+
+$body$
+
+% Automatically add blank page if odd number of pages
+\AtEndDocument{%
+  \ifodd\value{page}%
+    \clearpage
+    \vspace*{1in}
+    \begin{center}
+        \LARGE This page intentionally left blank
+    \end{center}
+  \fi
+}
+
+\end{document}

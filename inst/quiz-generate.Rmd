@@ -1,24 +1,39 @@
 ---
 output:
   pdf_document:
-    keep_md: true
+    keep_md: false
     keep_tex: true
+    latex_engine: lualatex
 params:
   quiz.df: NULL
   title: ""
   subtitle: ""
+  short_title: ""
   instructor: ""
   version: "a"
   includeanswers: TRUE
   seed: 1
+  student_first_name: "Extra"
+  student_last_name: "Student"
+  student_username: "extra1"
+  exam_file_title_nospace: "exam"
 
 title: "`r params$title`"
 subtitle: "`r params$subtitle`"
+short_title: "`r params$short_title`"
 author:  "`r params$instructor`"
+student_first_name: "`r params$student_first_name`"
+student_last_name: "`r params$student_last_name`"
+student_first_name_url: "`r URLencode(params$student_first_name)`"
+student_last_name_url: "`r URLencode(params$student_last_name)`"
+student_username: "`r params$student_username`"
+exam_file_title_nospace: "`r params$exam_file_title_nospace`"
+
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, results="asis")
+# date: "`r params$date`"
 
 set.seed(params$seed)
 df <- params$quiz.df
@@ -113,15 +128,14 @@ str_simplify <- function(s) {
 
 print_question <- function(questionj, includeanswers, version="a")
 {
-  cat("\n\\begin{minipage}{\\linewidth}\n")
-
+  cat("\n\n\\item\n\\begin{minipage}[t]{\\linewidth}\n")
   question_type <- questionj$`Question Type`
   
   if(str_simplify(question_type)=="essay") {
-    cat('\n\n')
+    # cat('\n\n')
     question_str <- questionj$Question
     question_str <- clean_question(question_str) # Remove leading space before a tag
-    question_str <- sprintf("\\item (%d points) %s\\newline \n\n", questionj$Points, question_str)
+    question_str <- sprintf("(%d points) %s \n\n", questionj$Points, question_str)
     cat(question_str)
     
     feedback_str <- questionj$Feedback
@@ -137,7 +151,7 @@ print_question <- function(questionj, includeanswers, version="a")
   if(str_simplify(question_type)=="mc") {
     question_str <- questionj$Question
     question_str <- clean_question(question_str) # Remove leading space before a tag
-    question_str <- sprintf("\\item %s\n\n", question_str)
+    question_str <- sprintf("%s\n\n", question_str)
     cat(question_str)
     
     responses <- questionj %>%
@@ -182,7 +196,7 @@ print_question <- function(questionj, includeanswers, version="a")
     }
   }
     
-  cat("\\end{minipage}\\newline \n\n")
+  cat("\\end{minipage} \n\n")
 }
 ```
 
@@ -230,7 +244,7 @@ if(!is.null(quiz.df)) { # Don't do anything if the quiz is NULL
   if(ngroups>0) {
     cat("\\textbf{Multiple choice:} Choose the best response to each prompt.\\newline \n\n")
     
-    cat("\\begin{enumerate}[leftmargin=1pc]")
+    cat("\\begin{enumerate}")
   
     for(ng in 1:ngroups) {
       group.df <- dplyr::filter(df.mc, G==groups[ng])
@@ -257,7 +271,7 @@ if(!is.null(quiz.df)) { # Don't do anything if the quiz is NULL
     dir.str <- sprintf("\\textbf{Short-answer and problem-solving questions:} Provide written answers to each question in the space provided.\\newline\n\n")
     cat(dir.str)
     
-    cat("\\begin{enumerate}[leftmargin=1pc]\n")
+    cat("\\begin{enumerate}\n")
     setcounter_str <- sprintf("\\setcounter{enumi}{%d}\n", nextenum)
     cat(setcounter_str)
   

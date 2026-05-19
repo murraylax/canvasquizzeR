@@ -6,24 +6,32 @@
 #' @param size Number of digits for the hex code. Defaults to 33.
 #' @return Character string of lenghth 34, starting with the letter 'g' and followed by the 33-digit hex code, because that's what Canvas wants?
 #' @export
-create_longid <- function(size=33) {
+create_longid <- function(size = 33) {
   # Create stupid code
-  hexcodes <- as.character(as.hexmode(sample(0:15,size-1,replace=TRUE)))
-  longid <- paste(c("g",hexcodes),collapse = "") # Start it with g for some reason??
+  hexcodes <- as.character(as.hexmode(sample(0:15, size - 1, replace = TRUE)))
+  longid <- paste(c("g", hexcodes), collapse = "") # Start it with g for some reason??
   return(longid)
 }
 
 is_str_empty <- function(s) {
   s <- as.character(s)
-  if(is.na(s)) return(TRUE)
-  if(is.null(s)) return(TRUE)
-  if(!is.character(s)) return(TRUE)
-  if(stringr::str_squish(s)=="") return(TRUE)
+  if (is.na(s)) {
+    return(TRUE)
+  }
+  if (is.null(s)) {
+    return(TRUE)
+  }
+  if (!is.character(s)) {
+    return(TRUE)
+  }
+  if (stringr::str_squish(s) == "") {
+    return(TRUE)
+  }
   return(FALSE)
 }
 
 str_simplify <- function(s) {
-  return(stringr::str_squish( stringr::str_to_lower(s)))
+  return(stringr::str_squish(stringr::str_to_lower(s)))
 }
 
 
@@ -60,46 +68,108 @@ create_questionxml_mc <- function(df, qn, respids) {
 
   # Question ID - 33-digit hex code
   questionid <- create_longid()
-  question_str <- stringr::str_replace_all(question_str, "#IdentityQuestion", questionid)
+  question_str <- stringr::str_replace_all(
+    question_str,
+    "#IdentityQuestion",
+    questionid
+  )
 
-  if(magrittr::is_in("Points", quizcols) & !is_str_empty(df$Points[qn])) {
+  if (magrittr::is_in("Points", quizcols) & !is_str_empty(df$Points[qn])) {
     pts <- as.character(df$Points[qn])
   } else {
     pts <- "1"
   }
   question_str <- stringr::str_replace(question_str, "#pts", pts) # Defaults to 1 if field is not given
 
-  question_str <- stringr::str_replace(question_str, "#QuestionText", df$Question[qn])
+  question_str <- stringr::str_replace(
+    question_str,
+    "#QuestionText",
+    df$Question[qn]
+  )
 
-  question_str <- stringr::str_replace(question_str, "#Choice1Text", df$`Choice 1`[qn])
-  question_str <- stringr::str_replace(question_str, "#Choice2Text", df$`Choice 2`[qn])
-  question_str <- stringr::str_replace(question_str, "#Choice3Text", df$`Choice 3`[qn])
-  question_str <- stringr::str_replace(question_str, "#Choice4Text", df$`Choice 4`[qn])
+  question_str <- stringr::str_replace(
+    question_str,
+    "#Choice1Text",
+    df$`Choice 1`[qn]
+  )
+  question_str <- stringr::str_replace(
+    question_str,
+    "#Choice2Text",
+    df$`Choice 2`[qn]
+  )
+  question_str <- stringr::str_replace(
+    question_str,
+    "#Choice3Text",
+    df$`Choice 3`[qn]
+  )
+  question_str <- stringr::str_replace(
+    question_str,
+    "#Choice4Text",
+    df$`Choice 4`[qn]
+  )
 
-  question_respids <- respids[((qn-1)*4+1):(qn*4)]
-  question_str <- stringr::str_replace_all(question_str, "#respid1", as.character(question_respids[1]))
-  question_str <- stringr::str_replace_all(question_str, "#respid2", as.character(question_respids[2]))
-  question_str <- stringr::str_replace_all(question_str, "#respid3", as.character(question_respids[3]))
-  question_str <- stringr::str_replace_all(question_str, "#respid4", as.character(question_respids[4]))
+  question_respids <- respids[((qn - 1) * 4 + 1):(qn * 4)]
+  question_str <- stringr::str_replace_all(
+    question_str,
+    "#respid1",
+    as.character(question_respids[1])
+  )
+  question_str <- stringr::str_replace_all(
+    question_str,
+    "#respid2",
+    as.character(question_respids[2])
+  )
+  question_str <- stringr::str_replace_all(
+    question_str,
+    "#respid3",
+    as.character(question_respids[3])
+  )
+  question_str <- stringr::str_replace_all(
+    question_str,
+    "#respid4",
+    as.character(question_respids[4])
+  )
 
   correct_response <- as.integer(df$A[qn])
   correct_respid <- question_respids[correct_response]
-  question_str <- stringr::str_replace(question_str, "#respidcorrect", as.character(correct_respid))
+  question_str <- stringr::str_replace(
+    question_str,
+    "#respidcorrect",
+    as.character(correct_respid)
+  )
 
-  question_str <- stringr::str_replace(question_str, "#GeneralFeedbackText", df$Feedback[qn])
+  question_str <- stringr::str_replace(
+    question_str,
+    "#GeneralFeedbackText",
+    df$Feedback[qn]
+  )
 
   # Text type
-  if(magrittr::is_in("Text Type", quizcols) & !is_str_empty(df$`Text Type`[qn])) {
-    if(str_simplify(df$`Text Type`[qn])=="html") {
-      question_str <- stringr::str_replace_all(question_str, "#TextType", "text/html")
-    } else if(str_simplify(df$`Text Type`[qn])=="plain") {
-      question_str <- stringr::str_replace_all(question_str, "#TextType", "text/plain")
+  if (
+    magrittr::is_in("Text Type", quizcols) & !is_str_empty(df$`Text Type`[qn])
+  ) {
+    if (str_simplify(df$`Text Type`[qn]) == "html") {
+      question_str <- stringr::str_replace_all(
+        question_str,
+        "#TextType",
+        "text/html"
+      )
+    } else if (str_simplify(df$`Text Type`[qn]) == "plain") {
+      question_str <- stringr::str_replace_all(
+        question_str,
+        "#TextType",
+        "text/plain"
+      )
     } else {
       error_str <- sprintf("ERROR: Invalid text type, %s", df$`Text Type`[qn])
       stop(error_str)
     }
   } else {
-    question_str <- stringr::str_replace_all(questionstr, "#TextType", "text/plain") # text/plain is the default if not specified
+    question_str <- stringr::str_replace_all(
+      questionstr,
+      "#TextType",
+      "text/plain"
+    ) # text/plain is the default if not specified
   }
 
   return(question_str)
@@ -132,29 +202,55 @@ create_questionxml_essay <- function(df, qn) {
 
   # Question ID - 33-digit hex code
   questionid <- create_longid()
-  question_str <- stringr::str_replace_all(question_str, "#IdentityQuestion", questionid)
+  question_str <- stringr::str_replace_all(
+    question_str,
+    "#IdentityQuestion",
+    questionid
+  )
 
-  if(magrittr::is_in("Points", quizcols) & !is_str_empty(df$Points[qn])) {
+  if (magrittr::is_in("Points", quizcols) & !is_str_empty(df$Points[qn])) {
     pts <- as.character(df$Points[qn])
   } else {
     pts <- "1"
   }
   question_str <- stringr::str_replace(question_str, "#pts", pts) # Defaults to 1 if field is not given
-  question_str <- stringr::str_replace(question_str, "#QuestionText", df$Question[qn])
-  question_str <- stringr::str_replace(question_str, "#GeneralFeedbackText", df$Feedback[qn])
+  question_str <- stringr::str_replace(
+    question_str,
+    "#QuestionText",
+    df$Question[qn]
+  )
+  question_str <- stringr::str_replace(
+    question_str,
+    "#GeneralFeedbackText",
+    df$Feedback[qn]
+  )
 
   # Text type
-  if(magrittr::is_in("Text Type", quizcols) & !is_str_empty(df$`Text Type`[qn])) {
-    if(df$`Text Type`[qn]=="html") {
-      question_str <- stringr::str_replace_all(question_str, "#TextType", "text/html")
-    } else if(df$`Text Type`[qn]=="plain") {
-      question_str <- stringr::str_replace_all(question_str, "#TextType", "text/plain")
+  if (
+    magrittr::is_in("Text Type", quizcols) & !is_str_empty(df$`Text Type`[qn])
+  ) {
+    if (df$`Text Type`[qn] == "html") {
+      question_str <- stringr::str_replace_all(
+        question_str,
+        "#TextType",
+        "text/html"
+      )
+    } else if (df$`Text Type`[qn] == "plain") {
+      question_str <- stringr::str_replace_all(
+        question_str,
+        "#TextType",
+        "text/plain"
+      )
     } else {
       error_str <- sprintf("ERROR: Invalid text type, %s", df$`Text Type`[qn])
       stop(error_str)
     }
   } else {
-    question_str <- stringr::str_replace_all(question_str, "#TextType", "text/plain") # text/plain is the default if not specified
+    question_str <- stringr::str_replace_all(
+      question_str,
+      "#TextType",
+      "text/plain"
+    ) # text/plain is the default if not specified
   }
 
   return(question_str)
@@ -189,14 +285,17 @@ create_questionxml <- function(df, qn, respids) {
   quizcols <- colnames(df)
 
   # Identify the question type
-  if(magrittr::is_in("Question Type", quizcols) & !is_str_empty(df$`Question Type`[qn])) {
+  if (
+    magrittr::is_in("Question Type", quizcols) &
+      !is_str_empty(df$`Question Type`[qn])
+  ) {
     question_type <- df$`Question Type`[qn]
   } else {
     question_type <- "MC"
   }
-  if(str_simplify(question_type)=="mc") {
+  if (str_simplify(question_type) == "mc") {
     question_str <- create_questionxml_mc(df, qn, respids)
-  } else if(str_simplify(question_type)=="essay") {
+  } else if (str_simplify(question_type) == "essay") {
     question_str <- create_questionxml_essay(df, qn)
   } else {
     errorstr <- sprintf("ERROR: Unknown question type, %s.", question_type)
@@ -230,7 +329,6 @@ create_questionxml <- function(df, qn, respids) {
 #' @return Character string of the XML code for a group of multiple-choice quiz questions
 #' @export
 create_groupxml <- function(df, groupi, respids) {
-
   filename <- paste0(path.package("canvasquizzeR"), "/group.xml")
 
   group_str <- readr::read_file(filename)
@@ -240,22 +338,35 @@ create_groupxml <- function(df, groupi, respids) {
   group_str <- stringr::str_replace(group_str, "#groupid", groupid)
 
   # Group Name
-  group_str <- stringr::str_replace(group_str, "#GroupName", as.character(groupi))
+  group_str <- stringr::str_replace(
+    group_str,
+    "#GroupName",
+    as.character(groupi)
+  )
 
   # Identify rows in df associated with group
-  group_questions_rows <- which(df$G==groupi)
+  group_questions_rows <- which(df$G == groupi)
 
   # Set the number of points per question
-  df.group <- dplyr::slice(df,group_questions_rows)
+  df.group <- dplyr::slice(df, group_questions_rows)
   points_per_question <- as.character(as.numeric(max(df.group$Points)))
   group_str <- stringr::str_replace(group_str, "#pts", points_per_question)
 
   all_qestion_strs <- ""
-  for(q in group_questions_rows) {
+  for (q in group_questions_rows) {
     question_str <- create_questionxml(df, q, respids)
-    all_qestion_strs <- paste(all_qestion_strs, question_str, sep="\n", collapse = "")
+    all_qestion_strs <- paste(
+      all_qestion_strs,
+      question_str,
+      sep = "\n",
+      collapse = ""
+    )
   }
-  group_str <- stringr::str_replace(group_str, "#AllQuestionsText", all_qestion_strs)
+  group_str <- stringr::str_replace(
+    group_str,
+    "#AllQuestionsText",
+    all_qestion_strs
+  )
   return(group_str)
 }
 
@@ -282,19 +393,23 @@ create_groupxml <- function(df, groupi, respids) {
 #' @param quizfilename Character string with the filename for the quiz
 #' @export
 generateQTI <- function(df, outfolder, quiztitle, quizfilename) {
-  nrespids <- nrow(df)*4
-  respids <- sample(1000:9999, size=nrespids, replace = FALSE) # Create response ids for every response in the quiz
+  nrespids <- nrow(df) * 4
+  respids <- sample(1000:9999, size = nrespids, replace = FALSE) # Create response ids for every response in the quiz
 
   filename <- paste0(path.package("canvasquizzeR"), "/wholequiz.xml")
 
   wholequiz_str <- readr::read_file(filename)
   all_group_str <- ""
   all_groups <- unique(df$G)
-  for(groupi in all_groups) {
+  for (groupi in all_groups) {
     group_str <- create_groupxml(df, groupi, respids)
-    all_group_str <- paste(all_group_str, group_str, sep="\n", collapse="")
+    all_group_str <- paste(all_group_str, group_str, sep = "\n", collapse = "")
   }
-  wholequiz_str <- stringr::str_replace(wholequiz_str, "#AllGroups", all_group_str)
+  wholequiz_str <- stringr::str_replace(
+    wholequiz_str,
+    "#AllGroups",
+    all_group_str
+  )
 
   # Write the Quiz ID
   quizid <- create_longid()
@@ -303,11 +418,16 @@ generateQTI <- function(df, outfolder, quiztitle, quizfilename) {
   # Write the Quiz Title
   wholequiz_str <- stringr::str_replace(wholequiz_str, "#QuizTitle", quiztitle)
 
-
   outfile <- sprintf("%s/%s.xml", outfolder, quizid)
-  readr::write_file(wholequiz_str, file=outfile)
+  readr::write_file(wholequiz_str, file = outfile)
 
-  systemstr <- sprintf("zip -r -j %s%s %s%s.xml", outfolder, quizfilename, outfolder, quizid)
+  systemstr <- sprintf(
+    "zip -r -j %s%s %s%s.xml",
+    outfolder,
+    quizfilename,
+    outfolder,
+    quizid
+  )
   system(systemstr)
 }
 
@@ -323,22 +443,22 @@ generateQTI <- function(df, outfolder, quiztitle, quizfilename) {
 #' @export
 extract_qtizip <- function(filename, folder) {
   lastchar <- stringr::str_sub(folder, -1)
-  if(lastchar != "/") {
+  if (lastchar != "/") {
     folder <- sprintf("%s/", folder)
   }
   filepath <- sprintf("%s%s", folder, filename)
-  allfiles <- utils::unzip(filepath, list=TRUE)
+  allfiles <- utils::unzip(filepath, list = TRUE)
 
-  utils::unzip(zipfile=filepath, exdir=folder)
+  utils::unzip(zipfile = filepath, exdir = folder)
 
   xmlfiles <- dplyr::filter(allfiles, stringr::str_detect(Name, ".xml"))
   assessment.file <- ""
-  for(i in 1:nrow(xmlfiles)) {
+  for (i in 1:nrow(xmlfiles)) {
     xml_filepath <- sprintf("%s%s", folder, xmlfiles$Name[i])
-    xmlroot <- XML::xmlRoot( XML::xmlParse(xml_filepath) )
+    xmlroot <- XML::xmlRoot(XML::xmlParse(xml_filepath))
 
     assessmemt.xml <- XML::xmlElementsByTagName(xmlroot, "assessment")
-    if(length(assessmemt.xml)>0) {
+    if (length(assessmemt.xml) > 0) {
       assessment.file <- xml_filepath
     }
   }
@@ -365,23 +485,24 @@ extract_qtizip <- function(filename, folder) {
 #'   - 'Choice 4': Choice 4
 #'   - Feedback: General feedback given to students after they complete the quiz and answers are shown
 #' @export
-quiz_tibble <- function(nrows=0) {
-  df <- tibble::tibble(`G`=as.character(NA),
-                       `Question Type`=as.character(NA),
-                       `Text Type`=as.character(NA),
-                       `Points`=as.numeric(NA),
-                       `Question`=as.character(NA),
-                       `A`=as.character(NA),
-                       `Choice 1`=as.character(NA),
-                       `Choice 2`=as.character(NA),
-                       `Choice 3`=as.character(NA),
-                       `Choice 4`=as.character(NA),
-                       `Feedback`=as.character(NA),
-                       .rows=nrows)
+quiz_tibble <- function(nrows = 0) {
+  df <- tibble::tibble(
+    `G` = as.character(NA),
+    `Question Type` = as.character(NA),
+    `Text Type` = as.character(NA),
+    `Points` = as.numeric(NA),
+    `Question` = as.character(NA),
+    `A` = as.character(NA),
+    `Choice 1` = as.character(NA),
+    `Choice 2` = as.character(NA),
+    `Choice 3` = as.character(NA),
+    `Choice 4` = as.character(NA),
+    `Feedback` = as.character(NA),
+    .rows = nrows
+  )
 
   return(df)
 }
-
 
 
 #' Extract information for a single quiz question from XML
@@ -405,64 +526,84 @@ quiz_tibble <- function(nrows=0) {
 #'   - Feedback: General feedback given to students after they complete the quiz and answers are shown
 #' @export
 extract_question <- function(question.xml) {
-  question.df <- quiz_tibble(nrows=1)
+  question.df <- quiz_tibble(nrows = 1)
 
-  texttype <- XML::xmlGetAttr(question.xml[["presentation"]][["material"]][["mattext"]], "texttype")
-  if(texttype=="text/html") question.df$`Text Type`[1] <- "html"
-  if(texttype=="text/plain") question.df$`Text Type`[1] <- "plain"
+  texttype <- XML::xmlGetAttr(
+    question.xml[["presentation"]][["material"]][["mattext"]],
+    "texttype"
+  )
+  if (texttype == "text/html") {
+    question.df$`Text Type`[1] <- "html"
+  }
+  if (texttype == "text/plain") {
+    question.df$`Text Type`[1] <- "plain"
+  }
 
-  question_str <- XML::xmlValue(question.xml[["presentation"]][["material"]][[1]][[1]])
+  question_str <- XML::xmlValue(question.xml[["presentation"]][["material"]][[
+    1
+  ]][[1]])
   question_str <- stringr::str_squish(question_str)
   question.df$Question[1] <- question_str
 
-  feedback_str <- XML::xmlValue(question.xml[["itemfeedback"]][["flow_mat"]][["material"]][["mattext"]])
+  feedback_str <- XML::xmlValue(question.xml[["itemfeedback"]][["flow_mat"]][[
+    "material"
+  ]][["mattext"]])
   feedback_str <- stringr::str_squish(feedback_str)
   question.df$Feedback[1] <- feedback_str
 
   questiondata <- question.xml[["itemmetadata"]][["qtimetadata"]]
   nfields <- XML::xmlSize(questiondata)
-  for(nf in 1: nfields) {
+  for (nf in 1:nfields) {
     fieldlabel <- XML::xmlValue(questiondata[[nf]][["fieldlabel"]])
-    if(fieldlabel=="question_type") {
+    if (fieldlabel == "question_type") {
       question_type <- XML::xmlValue(questiondata[[nf]][["fieldentry"]])
-      if(question_type=="multiple_choice_question") question.df$`Question Type`[1] <- "MC"
-      if(question_type=="essay_question") question.df$`Question Type`[1] <- "Essay"
+      if (question_type == "multiple_choice_question") {
+        question.df$`Question Type`[1] <- "MC"
+      }
+      if (question_type == "essay_question") {
+        question.df$`Question Type`[1] <- "Essay"
+      }
     }
 
-    if(fieldlabel=="points_possible") {
-      pts <- as.numeric( XML::xmlValue(questiondata[[nf]][["fieldentry"]]) )
+    if (fieldlabel == "points_possible") {
+      pts <- as.numeric(XML::xmlValue(questiondata[[nf]][["fieldentry"]]))
       question.df$Points <- pts
     }
   }
 
-
-
-  if(question_type=="multiple_choice_question") {
-    responses.xml <- question.xml[["presentation"]][["response_lid"]][["render_choice"]]
+  if (question_type == "multiple_choice_question") {
+    responses.xml <- question.xml[["presentation"]][["response_lid"]][[
+      "render_choice"
+    ]]
     nresponses <- XML::xmlSize(responses.xml)
 
     resplabels <- c()
 
     choice_colidx <- stringr::str_which(names(question.df), "Choice 1")
-    for(nr in 1:nresponses) {
+    for (nr in 1:nresponses) {
       response_str <- XML::xmlValue(responses.xml[[nr]][["material"]][[1]])
-      question.df[1,choice_colidx+nr-1] <- response_str
+      question.df[1, choice_colidx + nr - 1] <- response_str
 
       # Get the response label
-      resplabel <- as.numeric(XML::xmlAttrs(responses.xml[[nr]],"ident"))
+      resplabel <- as.numeric(XML::xmlAttrs(responses.xml[[nr]], "ident"))
       resplabels <- c(resplabels, resplabel)
     }
 
     # Get response label for correct answer
-    res <- XML::xmlElementsByTagName( question.xml[["resprocessing"]], "respcondition")
-    for(nres in 1:length(res)) {
+    res <- XML::xmlElementsByTagName(
+      question.xml[["resprocessing"]],
+      "respcondition"
+    )
+    for (nres in 1:length(res)) {
       resi <- res[nres]$respcondition
-      if(XML::xmlGetAttr(resi, "continue")=="No") {
+      if (XML::xmlGetAttr(resi, "continue") == "No") {
         # This is the correct answer
-        correctlabel <- as.numeric(XML::xmlValue(resi[["conditionvar"]][["varequal"]]))
+        correctlabel <- as.numeric(XML::xmlValue(resi[["conditionvar"]][[
+          "varequal"
+        ]]))
       }
     }
-    A <- as.character(which(resplabels==correctlabel))
+    A <- as.character(which(resplabels == correctlabel))
     question.df$A[1] <- A
   }
 
@@ -495,7 +636,8 @@ extract_group_questions <- function(group.xml) {
   nquestions <- XML::xmlSize(group.xml)
   G <- XML::xmlGetAttr(group.xml, "title")
 
-  for(nq in 2:nquestions) { # First element is header stuff for the group
+  for (nq in 2:nquestions) {
+    # First element is header stuff for the group
     questioni.xml <- group.xml[[nq]]
     dfi <- extract_question(questioni.xml)
     group.df <- dplyr::bind_rows(group.df, dfi)
@@ -526,12 +668,12 @@ extract_group_questions <- function(group.xml) {
 #' @export
 extract_quiz_xml <- function(xml_filepath) {
   df <- quiz_tibble()
-  xmlroot <- XML::xmlRoot( XML::xmlParse(xml_filepath) )
+  xmlroot <- XML::xmlRoot(XML::xmlParse(xml_filepath))
 
   questiongroups <- xmlroot[[1]][[2]]
   ngroups <- XML::xmlSize(questiongroups)
 
-  for(ng in 1:ngroups) {
+  for (ng in 1:ngroups) {
     groupi.xml <- questiongroups[[ng]]
     dfi <- extract_group_questions(groupi.xml)
     df <- dplyr::bind_rows(df, dfi)
@@ -565,4 +707,3 @@ create_quizdf_zip <- function(filename, folder) {
   quiz.df <- extract_quiz_xml(assessment.file)
   return(quiz.df)
 }
-
