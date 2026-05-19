@@ -503,3 +503,43 @@ read_quiz_googledoc <- function(
   df <- read_quiz_docx(filepath, tbl_number)
   return(df)
 }
+
+#' Read a quiz in from a JSON file and return a quiz data frame.
+#'
+#' @description This function reads a quiz in from a JSON file.
+#' @param filepath Path to the JSON file
+#' @return Quiz data frame
+#' @export
+read_quiz_json <- function(filepath) {
+  df <- jsonlite::fromJSON(filepath) |>
+    as.data.frame() |>
+    unnest(quiz.questions) |>
+    unnest_wider(choices, names_sep = "_") |>
+    rename(
+      G = quiz.group,
+      Question = question,
+      `Question Type` = type,
+      `Text Type` = textType,
+      Points = quiz.points,
+      A = correctAnswer,
+      `Choice 1` = choices_1,
+      `Choice 2` = choices_2,
+      `Choice 3` = choices_3,
+      `Choice 4` = choices_4,
+      Feedback = feedback
+    ) |>
+    select(
+      G,
+      Question,
+      `Question Type`,
+      `Text Type`,
+      Points,
+      A,
+      `Choice 1`,
+      `Choice 2`,
+      `Choice 3`,
+      `Choice 4`,
+      Feedback
+    )
+  return(df)
+}

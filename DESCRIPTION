@@ -8,7 +8,6 @@ Description: This packages contains functions for converting quizzes CSV files t
 License: `use_gpl3_license()` 
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports:
   readr,
   stringr,
@@ -23,3 +22,4 @@ Imports:
   googlesheets4,
   googledrive,
   docxtractr
+Config/roxygen2/version: 8.0.0
