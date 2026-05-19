@@ -429,6 +429,9 @@ generateQTI <- function(df, outfolder, quiztitle, quizfilename) {
     quizid
   )
   system(systemstr)
+
+  # Remove the unzipped XML file
+  rmf <- file.remove(outfile)
 }
 
 #' Unzip the QTI file and return the filepath for the XML file containing the assessment

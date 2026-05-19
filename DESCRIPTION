@@ -21,5 +21,6 @@ Imports:
   rmarkdown,
   googlesheets4,
   googledrive,
-  docxtractr
+  docxtractr,
+  jsonlite
 Config/roxygen2/version: 8.0.0
