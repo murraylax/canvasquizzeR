@@ -84,28 +84,28 @@ create_questionxml_mc <- function(df, qn, respids) {
   question_str <- stringr::str_replace(
     question_str,
     "#QuestionText",
-    df$Question[qn]
+    replace_equations(df$Question[qn])
   )
 
   question_str <- stringr::str_replace(
     question_str,
     "#Choice1Text",
-    df$`Choice 1`[qn]
+    replace_equations(df$`Choice 1`[qn])
   )
   question_str <- stringr::str_replace(
     question_str,
     "#Choice2Text",
-    df$`Choice 2`[qn]
+    replace_equations(df$`Choice 2`[qn])
   )
   question_str <- stringr::str_replace(
     question_str,
     "#Choice3Text",
-    df$`Choice 3`[qn]
+    replace_equations(df$`Choice 3`[qn])
   )
   question_str <- stringr::str_replace(
     question_str,
     "#Choice4Text",
-    df$`Choice 4`[qn]
+    replace_equations(df$`Choice 4`[qn])
   )
 
   question_respids <- respids[((qn - 1) * 4 + 1):(qn * 4)]
@@ -141,7 +141,7 @@ create_questionxml_mc <- function(df, qn, respids) {
   question_str <- stringr::str_replace(
     question_str,
     "#GeneralFeedbackText",
-    df$Feedback[qn]
+    replace_equations(df$Feedback[qn])
   )
 
   # Text type
@@ -217,12 +217,12 @@ create_questionxml_essay <- function(df, qn) {
   question_str <- stringr::str_replace(
     question_str,
     "#QuestionText",
-    df$Question[qn]
+    replace_equations(df$Question[qn])
   )
   question_str <- stringr::str_replace(
     question_str,
     "#GeneralFeedbackText",
-    df$Feedback[qn]
+    replace_equations(df$Feedback[qn])
   )
 
   # Text type
@@ -585,6 +585,7 @@ extract_question <- function(question.xml) {
     choice_colidx <- stringr::str_which(names(question.df), "Choice 1")
     for (nr in 1:nresponses) {
       response_str <- XML::xmlValue(responses.xml[[nr]][["material"]][[1]])
+      response_str <- stringr::str_squish(response_str)
       question.df[1, choice_colidx + nr - 1] <- response_str
 
       # Get the response label
@@ -709,4 +710,105 @@ create_quizdf_zip <- function(filename, folder) {
   assessment.file <- extract_qtizip(filename, folder)
   quiz.df <- extract_quiz_xml(assessment.file)
   return(quiz.df)
+}
+
+#' Extract equations from a question string
+#'
+#' @description
+#' Extract equations from a question string. Equations are delimited with $[ ]$ in the question string. This function returns a vector of the equations without the delimiters.
+#' @param question_str Character string of the question text, which may contain equations delimited with $[ ]$
+#' @return Vector of character strings, where each string is a LaTeX equation extracted from the question string, without the $[ ]$ delimiters
+#' @export
+extract_equations <- function(question_str) {
+  # Extract equations delimited with $[ ]$
+  eqs <- stringr::str_extract_all(question_str, "\\$\\[.*?\\]\\$")[[1]]
+  eqs <- stringr::str_squish(eqs)
+  eqs <- stringr::str_replace_all(eqs, "\\$\\[", "")
+  eqs <- stringr::str_replace_all(eqs, "\\]\\$", "")
+  return(eqs)
+}
+
+#' Encode equations for use in URLs
+#'
+#' Encode equations for use in URLs. This function performs two rounds of URL encoding to ensure that all special characters are properly encoded for use in URLs. The function also appends query parameters to the encoded string if provided.
+#' @param latex_str Character string of the LaTeX equation to be encoded
+#' @param query_params Named list of query parameters to append to the encoded string. For example, `list(scale = 1)` will append `?scale=1` to the encoded string. Default is `list(scale = 1)`.
+#' @return Character string of the double URL-encoded LaTeX equation with appended query parameters if provided
+#' @export
+encode_equations <- function(latex_str, query_params = list(scale = 1)) {
+  # First encoding pass
+  step1 <- utils::URLencode(latex_str, repeated = FALSE)
+
+  # Second encoding pass (encodes the % signs from step 1)
+  step2 <- utils::URLencode(step1, repeated = FALSE)
+
+  # # Append query parameters if provided
+  # if (!is.null(query_params)) {
+  #   param_str <- paste(
+  #     paste0(names(query_params), "=", unlist(query_params)),
+  #     collapse = "&"
+  #   )
+  #   step2 <- paste0(step2, "?", param_str)
+  # }
+
+  return(step2)
+}
+
+#' Create the image tag for a LaTeX equation string
+#'
+#' @description
+#' Create the image tag for a LaTeX equation string. This function takes a LaTeX equation string, encodes it for use in a URL, and then creates the appropriate image tag for the equation using the codecogs equation image service. The resulting image tag is formatted for use in Canvas quizzes, with the appropriate attributes for accessibility and lazy loading.
+#' @param latex_eq_str Character string of the LaTeX equation to be converted into an image tag
+#' @return Character string of the image tag for the LaTeX equation, formatted for use in Canvas quizzes
+#' @export
+imgtag_equations <- function(latex_eq_str) {
+  # Create the URL for the image of the equation using codecogs
+  latex_encoded <- encode_equations(
+    latex_eq_str,
+    query_params = list(scale = 1)
+  )
+  # url <- paste0(
+  #   '&lt;img class="equation_image" title="',
+  #   latex_eq_str,
+  #   '" src="https://uws.instructure.com/equation_images/',
+  #   latex_encoded,
+  #   '" alt="LaTeX: ',
+  #   latex_eq_str,
+  #   '" data-equation-content="',
+  #   latex_eq_str,
+  #   '" data-ignore-a11y-check="" loading="lazy"&gt;'
+  # )
+  url <- paste0(
+    '<img class="equation_image" title="',
+    stringr::fixed(latex_eq_str),
+    '" src="https://uws.instructure.com/equation_images/',
+    stringr::fixed(latex_encoded),
+    '" alt="LaTeX: ',
+    stringr::fixed(latex_eq_str),
+    '" data-equation-content="',
+    stringr::fixed(latex_eq_str),
+    '" data-ignore-a11y-check="" loading="lazy">'
+  )
+  return(url)
+}
+
+#' Create the image tags for all equations in a question string and replace the equations with the corresponding image tags
+#'
+#' @description
+#' Create the image tags for all equations in a question string and replace the equations with the corresponding image tags. This function replaces all the equations from the question with an image tag for each equation
+#'
+#' @param question_str Character string of the question text, which may contain equations delimited with $[ ]$
+#' @return Character string of the question text with all equations replaced by their corresponding image tags
+#' @export
+replace_equations <- function(question_str) {
+  eqs <- extract_equations(question_str)
+  for (eq in eqs) {
+    imgtag <- imgtag_equations(eq)
+    question_str <- stringr::str_replace_all(
+      question_str,
+      stringr::fixed(paste0("$[", eq, "]$")),
+      imgtag
+    )
+  }
+  return(question_str)
 }
