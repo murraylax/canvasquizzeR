@@ -737,19 +737,19 @@ extract_equations <- function(question_str) {
 #' @export
 encode_equations <- function(latex_str, query_params = list(scale = 1)) {
   # First encoding pass
-  step1 <- utils::URLencode(latex_str, repeated = FALSE)
+  step1 <- utils::URLencode(latex_str, repeated = FALSE, reserved = TRUE)
 
   # Second encoding pass (encodes the % signs from step 1)
-  step2 <- utils::URLencode(step1, repeated = FALSE)
+  step2 <- utils::URLencode(step1, repeated = TRUE)
 
-  # # Append query parameters if provided
-  # if (!is.null(query_params)) {
-  #   param_str <- paste(
-  #     paste0(names(query_params), "=", unlist(query_params)),
-  #     collapse = "&"
-  #   )
-  #   step2 <- paste0(step2, "?", param_str)
-  # }
+  # Append query parameters if provided
+  if (!is.null(query_params)) {
+    param_str <- paste(
+      paste0(names(query_params), "=", unlist(query_params)),
+      collapse = "&"
+    )
+    step2 <- paste0(step2, "?", param_str)
+  }
 
   return(step2)
 }
@@ -767,28 +767,18 @@ imgtag_equations <- function(latex_eq_str) {
     latex_eq_str,
     query_params = list(scale = 1)
   )
-  # url <- paste0(
-  #   '&lt;img class="equation_image" title="',
-  #   latex_eq_str,
-  #   '" src="https://uws.instructure.com/equation_images/',
-  #   latex_encoded,
-  #   '" alt="LaTeX: ',
-  #   latex_eq_str,
-  #   '" data-equation-content="',
-  #   latex_eq_str,
-  #   '" data-ignore-a11y-check="" loading="lazy"&gt;'
-  # )
   url <- paste0(
-    '<img class="equation_image" title="',
-    stringr::fixed(latex_eq_str),
-    '" src="https://uws.instructure.com/equation_images/',
-    stringr::fixed(latex_encoded),
+    '&lt;img class="equation_image" title="',
+    latex_eq_str,
+    '" src="https://uwlac.instructure.com/equation_images/',
+    latex_encoded,
     '" alt="LaTeX: ',
-    stringr::fixed(latex_eq_str),
+    latex_eq_str,
     '" data-equation-content="',
-    stringr::fixed(latex_eq_str),
-    '" data-ignore-a11y-check="" loading="lazy">'
+    latex_eq_str,
+    '" data-ignore-a11y-check="" loading="lazy"&gt;'
   )
+
   return(url)
 }
 
@@ -804,10 +794,16 @@ replace_equations <- function(question_str) {
   eqs <- extract_equations(question_str)
   for (eq in eqs) {
     imgtag <- imgtag_equations(eq)
-    question_str <- stringr::str_replace_all(
+    # question_str <- stringr::str_replace_all(
+    #   question_str,
+    #   stringr::fixed(paste0("$[", eq, "]$")),
+    #   imgtag
+    # )
+    question_str <- gsub(
+      paste0("$[", eq, "]$"),
+      imgtag,
       question_str,
-      stringr::fixed(paste0("$[", eq, "]$")),
-      imgtag
+      fixed = TRUE
     )
   }
   return(question_str)

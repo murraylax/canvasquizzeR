@@ -513,9 +513,9 @@ read_quiz_googledoc <- function(
 read_quiz_json <- function(filepath) {
   df <- jsonlite::fromJSON(filepath) |>
     as.data.frame() |>
-    unnest(quiz.questions) |>
-    unnest_wider(choices, names_sep = "_") |>
-    rename(
+    tidyr::unnest(quiz.questions) |>
+    tidyr::unnest_wider(choices, names_sep = "_") |>
+    dplyr::rename(
       G = quiz.group,
       Question = question,
       `Question Type` = type,
@@ -528,7 +528,7 @@ read_quiz_json <- function(filepath) {
       `Choice 4` = choices_4,
       Feedback = feedback
     ) |>
-    select(
+    dplyr::select(
       G,
       Question,
       `Question Type`,
