@@ -418,16 +418,17 @@ generateQTI <- function(df, outfolder, quiztitle, quizfilename) {
   # Write the Quiz Title
   wholequiz_str <- stringr::str_replace(wholequiz_str, "#QuizTitle", quiztitle)
 
-  outfile <- sprintf("%s/%s.xml", outfolder, quizid)
+  outfile <- file.path(outfolder, paste0(quizid, ".xml"))
   readr::write_file(wholequiz_str, file = outfile)
 
+  zippath <- file.path(outfolder, quizfilename)
+
   systemstr <- sprintf(
-    "zip -r -j %s%s %s%s.xml",
-    outfolder,
-    quizfilename,
-    outfolder,
-    quizid
+    "zip -r -j %s %s",
+    zippath,
+    outfile
   )
+  print(systemstr)
   system(systemstr)
 
   # Remove the unzipped XML file
